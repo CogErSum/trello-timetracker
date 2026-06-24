@@ -29,6 +29,7 @@
       'card-back-section': function(t, opts) {
         return {
           title: 'Time Tracking',
+          icon: APP_URL + '/icons/icon.png',
           content: {
             type: 'iframe',
             url: APP_URL + '/?view=card-history&cardId=' + t.getContext().card + '&memberId=' + t.getContext().member,
