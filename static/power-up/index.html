@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trello Time Tracker</title>
+  <script src="power-up.js"></script>
+</head>
+<body>
+  <script>
+    var APP_URL = window.location.origin;
+
+    window.TrelloPowerUp.initialize({
+      'card-buttons': function(t, opts) {
+        return [{
+          text: 'Time Tracker',
+          callback: function() {
+            var ctx = t.getContext();
+            window.open(
+              APP_URL + '/?view=card-timer&cardId=' + ctx.card + '&memberId=' + ctx.member,
+              '_blank',
+              'width=400,height=500'
+            );
+          }
+        }];
+      },
+
+      'card-back-section': function(t, opts) {
+        return {
+          title: 'Time Tracking',
+          content: {
+            type: 'iframe',
+            url: APP_URL + '/?view=card-history&cardId=' + t.getContext().card + '&memberId=' + t.getContext().member,
+            height: 230
+          }
+        };
+      },
+
+      'board-buttons': function(t, opts) {
+        return [{
+          text: 'Dashboard',
+          callback: function() {
+            var ctx = t.getContext();
+            window.open(
+              APP_URL + '/?view=dashboard&memberId=' + ctx.member,
+              '_blank',
+              'width=800,height=600'
+            );
+          }
+        }];
+      },
+
+      'card-badges': function(t, opts) {
+        var ctx = t.getContext();
+        return fetch(APP_URL + '/api/v1/timers/active', {
+          headers: { 'X-Trello-Member-Id': ctx.member }
+        })
+        .then(function(r) { return r.ok ? r.json() : null; })
+        .then(function(timer) {
+          if (timer && timer.trello_card_id === ctx.card) {
+            var elapsed = Math.floor((Date.now() - new Date(timer.started_at).getTime()) / 1000);
+            return [{
+              id: 'timer-badge',
+              title: 'Active Timer',
+              text: formatDuration(elapsed),
+              color: 'green'
+            }];
+          }
+          return [];
+        })
+        .catch(function() { return []; });
+      }
+    });
+
+    function formatDuration(seconds) {
+      var h = Math.floor(seconds / 3600);
+      var m = Math.floor((seconds % 3600) / 60);
+      var s = seconds % 60;
+      return (h < 10 ? '0' : '') + h + ':' +
+             (m < 10 ? '0' : '') + m + ':' +
+             (s < 10 ? '0' : '') + s;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+{"root":["./src/App.tsx","./src/main.tsx","./src/vite-env.d.ts","./src/components/CardHistory.tsx","./src/components/Dashboard.tsx","./src/components/DeleteRecordButton.tsx","./src/components/EditRecordModal.tsx","./src/components/ExportButton.tsx","./src/components/ManualEntryForm.tsx","./src/components/TimerButton.tsx","./src/services/api.ts"],"version":"5.9.3"}
