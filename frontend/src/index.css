@@ -482,27 +482,100 @@ button:disabled {
 }
 
 .card-timer-view {
-  padding: 12px;
+  padding: 8px;
 }
 
 .card-timer-view .manual-entry-form {
-  padding: 12px;
-  margin-top: 12px;
+  padding: 8px;
+  margin-top: 8px;
 }
 
 .card-timer-view .card-history {
-  margin-top: 12px;
+  margin-top: 8px;
 }
 
 .card-timer-view .records-table th,
 .card-timer-view .records-table td {
-  padding: 8px 10px;
-  font-size: 12px;
+  padding: 6px 8px;
+  font-size: 11px;
 }
 
 .card-timer-view h3 {
-  font-size: 13px;
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+.card-timer-view .total-time {
+  font-size: 14px;
   margin-bottom: 8px;
+}
+
+.card-timer-view .form-group {
+  margin-bottom: 8px;
+}
+
+.card-timer-view .form-group label {
+  font-size: 11px;
+  margin-bottom: 3px;
+}
+
+.card-timer-view .form-group input,
+.card-timer-view .form-group textarea {
+  padding: 6px 8px;
+  font-size: 12px;
+}
+
+.card-timer-view .form-group textarea {
+  min-height: 48px;
+}
+
+.card-timer-view .timer-button {
+  gap: 10px;
+}
+
+.card-timer-view .timer-display {
+  font-size: 18px;
+  padding: 8px 12px;
+}
+
+.card-timer-view .timer-button button {
+  padding: 8px 16px;
+  font-size: 13px;
+}
+
+.card-timer-view .duration-input input {
+  width: 52px;
+  padding: 6px;
+  font-size: 12px;
+}
+
+.card-timer-view .duration-input span {
+  font-size: 12px;
+}
+
+.collapse-toggle {
+  background: none;
+  border: none;
+  color: var(--gray-500);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 4px 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: var(--transition);
+}
+
+.collapse-toggle:hover {
+  color: var(--primary);
+}
+
+.collapse-toggle svg {
+  transition: transform 0.2s ease;
+}
+
+.collapse-toggle.open svg {
+  transform: rotate(90deg);
 }
 
 @media (max-width: 768px) {

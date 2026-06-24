@@ -18,6 +18,7 @@ export function CardHistory({ memberId, cardId }: CardHistoryProps) {
   const [records, setRecords] = useState<TimeRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalSec, setTotalSec] = useState(0);
+  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
     fetchRecords();
@@ -39,56 +40,42 @@ export function CardHistory({ memberId, cardId }: CardHistoryProps) {
   const formatDuration = (seconds: number) => {
     const h = Math.floor(seconds / 3600);
     const m = Math.floor((seconds % 3600) / 60);
-    const s = seconds % 60;
-    return `${h}h ${m}m ${s}s`;
+    if (h > 0) return `${h}h ${m}m`;
+    return `${m}m`;
   };
 
   const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('ru-RU', {
-      day: 'numeric',
-      month: 'short',
-    });
-  };
-
-  const formatTime = (dateStr: string) => {
-    return new Date(dateStr).toLocaleTimeString('ru-RU', {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    return new Date(dateStr).toLocaleDateString('ru-RU', { day: '2-digit', month: 'short' });
   };
 
   if (loading) {
-    return <div className="card-history loading">Loading</div>;
+    return <div className="loading" style={{ height: 40, fontSize: 11 }}>Loading</div>;
   }
 
   return (
     <div className="card-history">
-      <h3>Time Tracking History</h3>
+      <button className={`collapse-toggle ${expanded ? 'open' : ''}`} onClick={() => setExpanded(!expanded)}>
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+        History ({records.length}) · {formatDuration(totalSec)}
+      </button>
 
-      <div className="total-time">
-        Total: {formatDuration(totalSec)}
-      </div>
-
-      {records.length === 0 ? (
-        <p className="empty-state">No time tracked yet.</p>
-      ) : (
-        <table className="records-table">
+      {expanded && records.length > 0 && (
+        <table className="records-table" style={{ marginTop: 6 }}>
           <thead>
             <tr>
               <th>Date</th>
               <th>Duration</th>
-              <th>Comment</th>
+              <th>Note</th>
             </tr>
           </thead>
           <tbody>
             {records.map((record) => (
               <tr key={record.id}>
-                <td>
-                  <div>{formatDate(record.created_at)}</div>
-                  <div style={{ fontSize: '12px', color: 'var(--gray-400)' }}>{formatTime(record.created_at)}</div>
-                </td>
+                <td>{formatDate(record.created_at)}</td>
                 <td style={{ fontWeight: 500 }}>{formatDuration(record.duration_sec)}</td>
-                <td style={{ color: record.comment ? 'var(--gray-700)' : 'var(--gray-300)' }}>
+                <td style={{ color: record.comment ? 'var(--gray-600)' : 'var(--gray-300)', maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {record.comment || '—'}
                 </td>
               </tr>

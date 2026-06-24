@@ -55,7 +55,6 @@ export function EstimateForm({ memberId, cardId }: EstimateFormProps) {
   };
 
   const handleDelete = async () => {
-    if (!confirm('Remove estimate?')) return;
     setLoading(true);
     try {
       await api.estimates.delete(memberId, cardId);
@@ -81,89 +80,34 @@ export function EstimateForm({ memberId, cardId }: EstimateFormProps) {
 
   if (estimate && !editing) {
     return (
-      <div className="manual-entry-form" style={{ borderLeft: '3px solid var(--warning)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          <div>
-            <h3 style={{ marginBottom: 4 }}>Time Estimate</h3>
-            <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--warning)' }}>
-              {formatMin(estimate.estimated_min)}
-            </div>
-            {estimate.comment && (
-              <div style={{ fontSize: 13, color: 'var(--gray-500)', marginTop: 4 }}>
-                {estimate.comment}
-              </div>
-            )}
-          </div>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button
-              onClick={() => setEditing(true)}
-              style={{ padding: '6px 12px', fontSize: 12, background: 'var(--gray-100)', color: 'var(--gray-600)' }}
-            >
-              Edit
-            </button>
-            <button
-              onClick={handleDelete}
-              disabled={loading}
-              style={{ padding: '6px 12px', fontSize: 12, background: 'var(--gray-100)', color: 'var(--danger)' }}
-            >
-              Remove
-            </button>
-          </div>
-        </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 8px', background: '#fffbeb', borderRadius: 6, marginTop: 6, fontSize: 12 }}>
+        <span style={{ color: 'var(--warning)', fontWeight: 600 }}>Est: {formatMin(estimate.estimated_min)}</span>
+        {estimate.comment && <span style={{ color: 'var(--gray-400)' }}>· {estimate.comment}</span>}
+        <span style={{ flex: 1 }} />
+        <button className="collapse-toggle" onClick={() => setEditing(true)} style={{ padding: 0, fontSize: 11 }}>edit</button>
+        <button className="collapse-toggle" onClick={handleDelete} disabled={loading} style={{ padding: 0, fontSize: 11, color: 'var(--danger)' }}>×</button>
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="manual-entry-form" style={{ borderLeft: '3px solid var(--warning)' }}>
-      <h3>{estimate ? 'Edit Estimate' : 'Set Time Estimate'}</h3>
-
-      <div className="form-group">
-        <label>Estimated Duration</label>
-        <div className="duration-input">
-          <input
-            type="number"
-            min="0"
-            max="999"
-            value={hours}
-            onChange={(e) => setHours(Number(e.target.value))}
-          />
-          <span>h</span>
-          <input
-            type="number"
-            min="0"
-            max="59"
-            value={minutes}
-            onChange={(e) => setMinutes(Number(e.target.value))}
-          />
-          <span>m</span>
-        </div>
+    <form onSubmit={handleSubmit} style={{ display: 'flex', gap: 6, alignItems: 'flex-end', padding: '6px 8px', background: '#fffbeb', borderRadius: 6, marginTop: 6, flexWrap: 'wrap' }}>
+      <span style={{ fontSize: 11, color: 'var(--gray-500)', paddingBottom: 6 }}>Est:</span>
+      <div className="duration-input" style={{ gap: 4 }}>
+        <input type="number" min="0" max="999" value={hours} onChange={(e) => setHours(Number(e.target.value))} style={{ width: 44, padding: '4px 6px', fontSize: 12 }} />
+        <span style={{ fontSize: 11 }}>h</span>
+        <input type="number" min="0" max="59" value={minutes} onChange={(e) => setMinutes(Number(e.target.value))} style={{ width: 44, padding: '4px 6px', fontSize: 12 }} />
+        <span style={{ fontSize: 11 }}>m</span>
       </div>
-
-      <div className="form-group">
-        <label>Note (optional)</label>
-        <input
-          type="text"
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-          placeholder="e.g. rough estimate for review"
-        />
-      </div>
-
-      <div style={{ display: 'flex', gap: 8 }}>
-        <button type="submit" disabled={loading || (hours === 0 && minutes === 0)}>
-          {loading ? 'Saving...' : 'Save Estimate'}
+      <input type="text" value={comment} onChange={(e) => setComment(e.target.value)} placeholder="note" style={{ width: 80, padding: '4px 6px', fontSize: 11 }} />
+      <button type="submit" disabled={loading || (hours === 0 && minutes === 0)} style={{ padding: '4px 10px', fontSize: 11 }}>
+        {loading ? '...' : 'Save'}
+      </button>
+      {estimate && (
+        <button type="button" onClick={() => { setEditing(false); fetchEstimate(); }} style={{ padding: '4px 8px', fontSize: 11, background: 'transparent', color: 'var(--gray-400)' }}>
+          ×
         </button>
-        {estimate && (
-          <button
-            type="button"
-            onClick={() => { setEditing(false); fetchEstimate(); }}
-            style={{ background: 'var(--gray-100)', color: 'var(--gray-600)' }}
-          >
-            Cancel
-          </button>
-        )}
-      </div>
+      )}
     </form>
   );
 }
