@@ -53,21 +53,40 @@
 
       'card-badges': function(t, opts) {
         var ctx = t.getContext();
-        return fetch(APP_URL + '/api/v1/timers/active', {
-          headers: { 'X-Trello-Member-Id': ctx.member }
-        })
-        .then(function(r) { return r.ok ? r.json() : null; })
-        .then(function(timer) {
+        return Promise.all([
+          fetch(APP_URL + '/api/v1/timers/active', {
+            headers: { 'X-Trello-Member-Id': ctx.member }
+          }).then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; }),
+          fetch(APP_URL + '/api/v1/records/board-summary', {
+            headers: { 'X-Trello-Member-Id': ctx.member }
+          }).then(function(r) { return r.ok ? r.json() : {}; }).catch(function() { return {}; })
+        ])
+        .then(function(results) {
+          var timer = results[0];
+          var summaries = results[1];
+          var badges = [];
+
+          var cardSummary = summaries[ctx.card];
+          if (cardSummary && cardSummary.total_sec > 0) {
+            badges.push({
+              id: 'total-time',
+              title: 'Total Time',
+              text: formatDuration(cardSummary.total_sec),
+              color: 'blue'
+            });
+          }
+
           if (timer && timer.trello_card_id === ctx.card) {
             var elapsed = Math.floor((Date.now() - new Date(timer.started_at).getTime()) / 1000);
-            return [{
+            badges.push({
               id: 'timer-badge',
-              title: 'Active Timer',
-              text: formatDuration(elapsed),
+              title: 'Tracking',
+              text: '⏱ ' + formatDuration(elapsed),
               color: 'green'
-            }];
+            });
           }
-          return [];
+
+          return badges;
         })
         .catch(function() { return []; });
       }

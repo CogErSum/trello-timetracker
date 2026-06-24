@@ -8,6 +8,44 @@ from src.presentation.api.schemas.record import CreateRecordRequest, RecordRespo
 router = APIRouter(prefix="/api/v1/records", tags=["records"])
 
 
+@router.get("/card-summary")
+async def card_time_summary(
+    card_id: str,
+    member_id: str = Depends(get_trello_member_id),
+):
+    from src.infrastructure.database.main import async_session_factory
+
+    async with async_session_factory() as session:
+        time_record_repo = TimeRecordRepository(session)
+        records = await time_record_repo.list_all(
+            trello_member_id=member_id,
+            card_id=card_id,
+        )
+        total_sec = sum(r["duration_sec"] for r in records)
+        return {
+            "card_id": card_id,
+            "total_sec": total_sec,
+            "record_count": len(records),
+        }
+
+
+@router.get("/board-summary")
+async def board_time_summary(
+    member_id: str = Depends(get_trello_member_id),
+):
+    from src.infrastructure.database.main import async_session_factory
+    from collections import defaultdict
+
+    async with async_session_factory() as session:
+        time_record_repo = TimeRecordRepository(session)
+        records = await time_record_repo.list_all(trello_member_id=member_id)
+        summaries = defaultdict(lambda: {"total_sec": 0, "record_count": 0})
+        for r in records:
+            summaries[r["trello_card_id"]]["total_sec"] += r["duration_sec"]
+            summaries[r["trello_card_id"]]["record_count"] += 1
+        return dict(summaries)
+
+
 @router.post("", response_model=RecordResponse, status_code=201)
 async def create_record(
     request: CreateRecordRequest,
