@@ -11,7 +11,7 @@ class DatabaseSettings(BaseSettings):
 class CORSSettings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="CORS_")
 
-    origins: list[str] = ["http://localhost:3000", "http://localhost:5173"]
+    origins: list[str] = ["http://localhost:3000", "http://localhost:5173", "https://cogersum.github.io"]
 
 
 class TrelloSettings(BaseSettings):

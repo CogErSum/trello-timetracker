@@ -5,10 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Trello Time Tracker</title>
   <script src="power-up.js"></script>
+  <script src="config.js"></script>
 </head>
 <body>
   <script>
-    var APP_URL = window.location.origin;
+    var APP_URL = BACKEND_URL;
 
     window.TrelloPowerUp.initialize({
       'card-buttons': function(t, opts) {

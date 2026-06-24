@@ -1,4 +1,4 @@
-const API_BASE_URL = '';
+const API_BASE_URL = (window as any).__CONFIG__?.API_BASE_URL || '';
 
 interface ApiOptions {
   method?: string;
@@ -105,7 +105,7 @@ export const api = {
       if (params?.cardId) searchParams.set('card_id', params.cardId);
       if (params?.dateFrom) searchParams.set('date_from', params.dateFrom);
       if (params?.dateTo) searchParams.set('date_to', params.dateTo);
-      return `/api/v1/export?${searchParams.toString()}`;
+      return `${API_BASE_URL}/api/v1/export?${searchParams.toString()}`;
     },
   },
 };
