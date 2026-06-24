@@ -38,7 +38,7 @@ function App() {
 
   return (
     <div className="app">
-      <h1>Trello Time Tracker</h1>
+      <h1>TeamSight Tracker</h1>
       <ExportButton memberId={memberId} />
       <Dashboard memberId={memberId} />
     </div>
