@@ -100,8 +100,8 @@ export const api = {
   },
 
   export: {
-    download: (_memberId: string, format: 'csv' | 'xlsx', params?: { cardId?: string; dateFrom?: string; dateTo?: string }) => {
-      const searchParams = new URLSearchParams({ format });
+    download: (memberId: string, format: 'csv' | 'xlsx', params?: { cardId?: string; dateFrom?: string; dateTo?: string }) => {
+      const searchParams = new URLSearchParams({ format, member_id: memberId });
       if (params?.cardId) searchParams.set('card_id', params.cardId);
       if (params?.dateFrom) searchParams.set('date_from', params.dateFrom);
       if (params?.dateTo) searchParams.set('date_to', params.dateTo);

@@ -1,11 +1,10 @@
 from datetime import datetime
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Header, HTTPException, Query
 from fastapi.responses import Response
 
 from src.application.export.export_records import ExportRecordsUseCase
 from src.infrastructure.database.persistence.time_record_repo import TimeRecordRepository
-from src.presentation.api.dependencies import get_trello_member_id
 
 router = APIRouter(prefix="/api/v1/export", tags=["export"])
 
@@ -16,7 +15,8 @@ async def export_records(
     card_id: str | None = Query(None),
     date_from: str | None = Query(None),
     date_to: str | None = Query(None),
-    member_id: str = Depends(get_trello_member_id),
+    member_id: str | None = Query(None),
+    x_trello_member_id: str | None = Header(None, alias="X-Trello-Member-Id"),
 ):
     from src.infrastructure.database.main import async_session_factory
 
@@ -26,10 +26,13 @@ async def export_records(
 
         parsed_date_from = datetime.fromisoformat(date_from) if date_from else None
         parsed_date_to = datetime.fromisoformat(date_to) if date_to else None
+        resolved_member_id = member_id or x_trello_member_id
+        if not resolved_member_id:
+            raise HTTPException(status_code=422, detail="member_id query param or X-Trello-Member-Id header required")
 
         try:
             content, content_type, filename = await use_case.execute(
-                trello_member_id=member_id,
+                trello_member_id=resolved_member_id,
                 format=format,
                 card_id=card_id,
                 date_from=parsed_date_from,
