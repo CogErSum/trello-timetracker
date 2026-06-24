@@ -57,8 +57,8 @@ export function EstimateForm({ memberId, cardId }: EstimateFormProps) {
     : (hours > 0 || minutes > 0);
 
   return (
-    <div className="tt-estimate">
-      <div className="tt-estimate-label">Est</div>
+    <div className="tt-estimate-row">
+      <span className="tt-estimate-badge">Estimate</span>
       <div className="tt-estimate-inputs">
         <input type="number" min="0" max="999" value={hours}
           onChange={(e) => setHours(Number(e.target.value))} />
@@ -68,8 +68,8 @@ export function EstimateForm({ memberId, cardId }: EstimateFormProps) {
         <span>m</span>
       </div>
       {changed && (
-        <button onClick={handleSave} disabled={loading} className="tt-btn tt-btn-save">
-          {loading ? '...' : '✓'}
+        <button onClick={handleSave} disabled={loading} className="tt-estimate-save">
+          {loading ? '...' : 'Save'}
         </button>
       )}
     </div>

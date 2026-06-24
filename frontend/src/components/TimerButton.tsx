@@ -35,9 +35,7 @@ export function TimerButton({ memberId, cardId }: TimerButtonProps) {
   const checkActiveTimer = async () => {
     try {
       const timer = await api.timers.getActive(memberId) as ActiveTimer;
-      if (timer && timer.trello_card_id === cardId) {
-        setActiveTimer(timer);
-      }
+      setActiveTimer(timer && timer.trello_card_id === cardId ? timer : null);
     } catch {
       setActiveTimer(null);
     }
@@ -76,7 +74,7 @@ export function TimerButton({ memberId, cardId }: TimerButtonProps) {
   };
 
   return (
-    <div className="tt-timer">
+    <div className="tt-timer-card">
       {activeTimer ? (
         <>
           <span className="tt-timer-display timer-active">{formatTime(elapsed)}</span>
@@ -85,9 +83,12 @@ export function TimerButton({ memberId, cardId }: TimerButtonProps) {
           </button>
         </>
       ) : (
-        <button onClick={handleStart} disabled={loading} className="tt-btn tt-btn-start">
-          Start
-        </button>
+        <>
+          <span className="tt-timer-display idle">No active timer</span>
+          <button onClick={handleStart} disabled={loading} className="tt-btn tt-btn-start">
+            Start
+          </button>
+        </>
       )}
     </div>
   );

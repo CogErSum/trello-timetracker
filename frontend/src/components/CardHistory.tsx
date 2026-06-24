@@ -50,7 +50,8 @@ export function CardHistory({ memberId, cardId }: CardHistoryProps) {
     <div className="tt-history">
       <button className="tt-history-toggle" onClick={() => setExpanded(!expanded)}>
         <span className={`tt-history-arrow ${expanded ? 'open' : ''}`}>▸</span>
-        History · {records.length} entries · {fmt(totalSec)}
+        History · {records.length} entries
+        {totalSec > 0 && <span className="tt-history-summary">{fmt(totalSec)}</span>}
       </button>
 
       {expanded && records.length > 0 && (
