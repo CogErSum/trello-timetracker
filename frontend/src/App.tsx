@@ -3,6 +3,7 @@ import { CardHistory } from './components/CardHistory'
 import { Dashboard } from './components/Dashboard'
 import { ManualEntryForm } from './components/ManualEntryForm'
 import { ExportButton } from './components/ExportButton'
+import { EstimateForm } from './components/EstimateForm'
 
 function App() {
   const params = new URLSearchParams(window.location.search)
@@ -15,6 +16,9 @@ function App() {
       <div className="app">
         <h1>Time Tracker</h1>
         <TimerButton memberId={memberId} cardId={cardId} />
+        <div style={{ marginTop: 24 }}>
+          <EstimateForm memberId={memberId} cardId={cardId} />
+        </div>
         <div style={{ marginTop: 24 }}>
           <ManualEntryForm
             memberId={memberId}

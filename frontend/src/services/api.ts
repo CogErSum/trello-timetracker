@@ -108,4 +108,25 @@ export const api = {
       return `${API_BASE_URL}/api/v1/export?${searchParams.toString()}`;
     },
   },
+
+  estimates: {
+    get: (memberId: string, cardId: string) =>
+      apiRequest(`/api/v1/estimates?card_id=${cardId}`, { memberId }),
+
+    upsert: (memberId: string, cardId: string, estimatedMin: number, comment?: string) =>
+      apiRequest('/api/v1/estimates', {
+        method: 'POST',
+        memberId,
+        body: { card_id: cardId, estimated_min: estimatedMin, comment },
+      }),
+
+    delete: (memberId: string, cardId: string) =>
+      apiRequest(`/api/v1/estimates/${cardId}`, {
+        method: 'DELETE',
+        memberId,
+      }),
+
+    board: (memberId: string) =>
+      apiRequest('/api/v1/estimates/board', { memberId }),
+  },
 };

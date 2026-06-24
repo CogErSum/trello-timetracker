@@ -59,20 +59,45 @@
           }).then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; }),
           fetch(APP_URL + '/api/v1/records/board-summary', {
             headers: { 'X-Trello-Member-Id': ctx.member }
+          }).then(function(r) { return r.ok ? r.json() : {}; }).catch(function() { return {}; }),
+          fetch(APP_URL + '/api/v1/estimates/board', {
+            headers: { 'X-Trello-Member-Id': ctx.member }
           }).then(function(r) { return r.ok ? r.json() : {}; }).catch(function() { return {}; })
         ])
         .then(function(results) {
           var timer = results[0];
           var summaries = results[1];
+          var estimates = results[2];
           var badges = [];
 
           var cardSummary = summaries[ctx.card];
+          var cardEstimate = estimates[ctx.card];
+
           if (cardSummary && cardSummary.total_sec > 0) {
+            var actualMin = Math.round(cardSummary.total_sec / 60);
+            var estText = '';
+            var badgeColor = 'blue';
+
+            if (cardEstimate) {
+              var ratio = actualMin / cardEstimate.estimated_min;
+              if (ratio <= 0.8) badgeColor = 'green';
+              else if (ratio <= 1.0) badgeColor = 'yellow';
+              else badgeColor = 'red';
+              estText = ' / ' + formatDuration(cardEstimate.estimated_min * 60);
+            }
+
             badges.push({
               id: 'total-time',
-              title: 'Total Time',
-              text: formatDuration(cardSummary.total_sec),
-              color: 'blue'
+              title: 'Time Spent',
+              text: formatDuration(cardSummary.total_sec) + estText,
+              color: badgeColor
+            });
+          } else if (cardEstimate) {
+            badges.push({
+              id: 'estimate-only',
+              title: 'Estimated',
+              text: '~' + formatDuration(cardEstimate.estimated_min * 60),
+              color: 'yellow'
             });
           }
 
