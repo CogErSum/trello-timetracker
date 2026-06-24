@@ -1,7 +1,10 @@
 from contextlib import asynccontextmanager
 from collections.abc import AsyncGenerator
 from pathlib import Path
+import logging
 
+from alembic import command
+from alembic.config import Config
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, FileResponse
@@ -14,11 +17,37 @@ from src.presentation.api.routes.dashboard import router as dashboard_router
 from src.presentation.api.routes.export import router as export_router
 from src.presentation.api.exception_handlers import register_exception_handlers
 
+logger = logging.getLogger(__name__)
 STATIC_DIR = Path("/app/static")
+
+
+def run_migrations() -> None:
+    try:
+        alembic_cfg = Config(str(Path(__file__).resolve().parents[3] / "alembic.ini"))
+        command.upgrade(alembic_cfg, "head")
+        logger.info("Migrations applied successfully")
+    except Exception as e:
+        logger.error(f"Migration failed: {e}")
+
+
+async def seed_member() -> None:
+    from src.infrastructure.database.main import async_session_factory
+    from src.infrastructure.database.seed import ensure_member_exists
+
+    member_id = "6a100df28c8a4d38a17c0c5f"
+    try:
+        async with async_session_factory() as session:
+            async with session.begin():
+                await ensure_member_exists(session, member_id)
+                logger.info(f"Member {member_id} seeded")
+    except Exception as e:
+        logger.error(f"Seed failed: {e}")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+    run_migrations()
+    await seed_member()
     yield
 
 
