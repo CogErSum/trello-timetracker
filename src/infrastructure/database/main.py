@@ -10,8 +10,12 @@ class Base(DeclarativeBase):
     pass
 
 
+database_url = settings.database.url
+if database_url.startswith("postgresql://"):
+    database_url = "postgresql+asyncpg://" + database_url[len("postgresql://"):]
+
 engine = create_async_engine(
-    settings.database.url,
+    database_url,
     echo=settings.database.echo,
 )
 

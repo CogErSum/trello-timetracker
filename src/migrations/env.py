@@ -12,8 +12,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from src.config.settings import settings
 from src.infrastructure.database.main import Base
 
+database_url = settings.database.url
+if database_url.startswith("postgresql://"):
+    database_url = "postgresql+asyncpg://" + database_url[len("postgresql://"):]
+
 config = context.config
-config.set_main_option("sqlalchemy.url", settings.database.url)
+config.set_main_option("sqlalchemy.url", database_url)
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
