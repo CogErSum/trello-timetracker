@@ -1,5 +1,8 @@
 import csv
 import io
+import json
+import urllib.request
+import urllib.parse
 from datetime import datetime
 
 from openpyxl import Workbook
@@ -8,39 +11,27 @@ from src.application.common.interfaces import ITimeRecordRepository
 from src.config.settings import settings
 
 
-async def fetch_card_names(card_ids: set[str]) -> dict[str, str]:
+def fetch_card_names(card_ids: set[str]) -> dict[str, str]:
     if not settings.trello.api_key or not settings.trello.api_token:
         return {}
-    import httpx
     names = {}
-    async with httpx.AsyncClient() as client:
-        for card_id in card_ids:
-            try:
-                resp = await client.get(
-                    f"https://api.trello.com/1/cards/{card_id}",
-                    params={"key": settings.trello.api_key, "token": settings.trello.api_token, "fields": "name"},
-                    timeout=5,
-                )
-                if resp.status_code == 200:
-                    names[card_id] = resp.json().get("name", card_id)
-            except Exception:
-                pass
+    for card_id in card_ids:
+        try:
+            url = f"https://api.trello.com/1/cards/{card_id}?key={settings.trello.api_key}&token={settings.trello.api_token}&fields=name"
+            with urllib.request.urlopen(url, timeout=5) as resp:
+                names[card_id] = json.loads(resp.read()).get("name", card_id)
+        except Exception:
+            pass
     return names
 
 
-async def fetch_member_name(member_id: str) -> str:
+def fetch_member_name(member_id: str) -> str:
     if not settings.trello.api_key or not settings.trello.api_token:
         return member_id
-    import httpx
     try:
-        async with httpx.AsyncClient() as client:
-            resp = await client.get(
-                f"https://api.trello.com/1/members/{member_id}",
-                params={"key": settings.trello.api_key, "token": settings.trello.api_token, "fields": "fullName"},
-                timeout=5,
-            )
-            if resp.status_code == 200:
-                return resp.json().get("fullName", member_id)
+        url = f"https://api.trello.com/1/members/{member_id}?key={settings.trello.api_key}&token={settings.trello.api_token}&fields=fullName"
+        with urllib.request.urlopen(url, timeout=5) as resp:
+            return json.loads(resp.read()).get("fullName", member_id)
     except Exception:
         pass
     return member_id
@@ -66,8 +57,8 @@ class ExportRecordsUseCase:
         )
 
         card_ids = {r["trello_card_id"] for r in records}
-        card_names = await fetch_card_names(card_ids)
-        member_name = await fetch_member_name(trello_member_id)
+        card_names = fetch_card_names(card_ids)
+        member_name = fetch_member_name(trello_member_id)
 
         if format == "csv":
             return self._to_csv(records, card_names, member_name)
