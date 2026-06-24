@@ -79,8 +79,6 @@ export function Dashboard({ memberId }: DashboardProps) {
 
   return (
     <div className="dashboard">
-      <h1>Dashboard</h1>
-
       <div className="stats-cards">
         <div className="stat-card">
           <h3>Today</h3>
