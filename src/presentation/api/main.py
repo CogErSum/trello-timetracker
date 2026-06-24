@@ -3,8 +3,6 @@ from collections.abc import AsyncGenerator
 from pathlib import Path
 import logging
 
-from alembic import command
-from alembic.config import Config
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, FileResponse
@@ -21,13 +19,16 @@ logger = logging.getLogger(__name__)
 STATIC_DIR = Path("/app/static")
 
 
-def run_migrations() -> None:
+async def init_db() -> None:
+    from sqlalchemy import text
+    from src.infrastructure.database.main import engine, Base
+
     try:
-        alembic_cfg = Config(str(Path(__file__).resolve().parents[3] / "alembic.ini"))
-        command.upgrade(alembic_cfg, "head")
-        logger.info("Migrations applied successfully")
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        logger.info("Database tables created/verified")
     except Exception as e:
-        logger.error(f"Migration failed: {e}")
+        logger.error(f"DB init failed: {e}")
 
 
 async def seed_member() -> None:
@@ -46,7 +47,7 @@ async def seed_member() -> None:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
-    run_migrations()
+    await init_db()
     await seed_member()
     yield
 
