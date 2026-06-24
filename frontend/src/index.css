@@ -55,6 +55,37 @@ body {
   min-height: 100vh;
 }
 
+.tt-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.tt-brand-logo {
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, #5B4CCD 0%, #B6A5FF 100%);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(91, 76, 205, 0.25);
+}
+
+.tt-brand-logo svg {
+  width: 16px;
+  height: 16px;
+  color: white;
+}
+
+.tt-brand-text {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--tmst-text);
+  letter-spacing: -0.01em;
+}
+
 /* Shared card style */
 .tt-card {
   background: rgba(255, 255, 255, 0.85);
