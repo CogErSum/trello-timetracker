@@ -34,12 +34,14 @@ export function EditRecordModal({
         comment: comment || undefined,
       });
       onSuccess();
-    } catch (error) {
+    } catch {
       alert('Failed to update record');
     } finally {
       setLoading(false);
     }
   };
+
+  const isValid = hours > 0 || minutes > 0;
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -79,11 +81,11 @@ export function EditRecordModal({
           </div>
 
           <div className="modal-actions">
-            <button type="button" onClick={onClose}>
+            <button type="button" onClick={onClose} style={{ background: 'var(--gray-100)', color: 'var(--gray-700)' }}>
               Cancel
             </button>
-            <button type="submit" disabled={loading || (hours === 0 && minutes === 0)}>
-              {loading ? 'Saving...' : 'Save'}
+            <button type="submit" disabled={loading || !isValid}>
+              {loading ? 'Saving...' : 'Save Changes'}
             </button>
           </div>
         </form>

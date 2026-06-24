@@ -30,12 +30,14 @@ export function ManualEntryForm({ memberId, cardId, onSuccess }: ManualEntryForm
       setHours(0);
       setMinutes(0);
       setComment('');
-    } catch (error) {
+    } catch {
       alert('Failed to add time record');
     } finally {
       setLoading(false);
     }
   };
+
+  const isValid = hours > 0 || minutes > 0;
 
   return (
     <form onSubmit={handleSubmit} className="manual-entry-form">
@@ -82,7 +84,7 @@ export function ManualEntryForm({ memberId, cardId, onSuccess }: ManualEntryForm
         />
       </div>
 
-      <button type="submit" disabled={loading || (hours === 0 && minutes === 0)}>
+      <button type="submit" disabled={loading || !isValid}>
         {loading ? 'Adding...' : 'Add Time'}
       </button>
     </form>

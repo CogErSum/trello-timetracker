@@ -19,19 +19,16 @@ export function TimerButton({ memberId, cardId }: TimerButtonProps) {
 
   useEffect(() => {
     checkActiveTimer();
-
     const syncInterval = setInterval(checkActiveTimer, 60000);
     return () => clearInterval(syncInterval);
   }, []);
 
   useEffect(() => {
     if (!activeTimer) return;
-
     const interval = setInterval(() => {
       const start = new Date(activeTimer.started_at).getTime();
       setElapsed(Math.floor((Date.now() - start) / 1000));
     }, 1000);
-
     return () => clearInterval(interval);
   }, [activeTimer]);
 
@@ -42,7 +39,7 @@ export function TimerButton({ memberId, cardId }: TimerButtonProps) {
         setActiveTimer(timer);
       }
     } catch {
-      // No active timer
+      setActiveTimer(null);
     }
   };
 
@@ -51,7 +48,7 @@ export function TimerButton({ memberId, cardId }: TimerButtonProps) {
     try {
       const response = await api.timers.start(memberId, cardId) as { timer: ActiveTimer };
       setActiveTimer(response.timer);
-    } catch (error) {
+    } catch {
       alert('Failed to start timer');
     } finally {
       setLoading(false);
@@ -64,7 +61,7 @@ export function TimerButton({ memberId, cardId }: TimerButtonProps) {
       await api.timers.stop(memberId);
       setActiveTimer(null);
       setElapsed(0);
-    } catch (error) {
+    } catch {
       alert('Failed to stop timer');
     } finally {
       setLoading(false);
@@ -82,13 +79,19 @@ export function TimerButton({ memberId, cardId }: TimerButtonProps) {
     <div className="timer-button">
       {activeTimer ? (
         <>
-          <span className="timer-display">{formatTime(elapsed)}</span>
-          <button onClick={handleStop} disabled={loading}>
-            Stop Timer
+          <span className="timer-display timer-active">{formatTime(elapsed)}</span>
+          <button onClick={handleStop} disabled={loading} style={{ background: 'var(--danger)' }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="6" y="6" width="12" height="12" rx="2"/>
+            </svg>
+            Stop
           </button>
         </>
       ) : (
-        <button onClick={handleStart} disabled={loading}>
+        <button onClick={handleStart} disabled={loading} style={{ background: 'var(--success)' }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polygon points="5,3 19,12 5,21"/>
+          </svg>
           Start Timer
         </button>
       )}

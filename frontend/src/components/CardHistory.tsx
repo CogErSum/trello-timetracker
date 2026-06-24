@@ -29,7 +29,7 @@ export function CardHistory({ memberId, cardId }: CardHistoryProps) {
       const data = await api.records.list(memberId, { cardId }) as TimeRecord[];
       setRecords(data);
       setTotalSec(data.reduce((sum, r) => sum + r.duration_sec, 0));
-    } catch (error) {
+    } catch {
       console.error('Failed to fetch records');
     } finally {
       setLoading(false);
@@ -44,11 +44,21 @@ export function CardHistory({ memberId, cardId }: CardHistoryProps) {
   };
 
   const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString();
+    return new Date(dateStr).toLocaleDateString('ru-RU', {
+      day: 'numeric',
+      month: 'short',
+    });
+  };
+
+  const formatTime = (dateStr: string) => {
+    return new Date(dateStr).toLocaleTimeString('ru-RU', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
   };
 
   if (loading) {
-    return <div className="card-history">Loading...</div>;
+    return <div className="card-history loading">Loading</div>;
   }
 
   return (
@@ -73,9 +83,14 @@ export function CardHistory({ memberId, cardId }: CardHistoryProps) {
           <tbody>
             {records.map((record) => (
               <tr key={record.id}>
-                <td>{formatDate(record.created_at)}</td>
-                <td>{formatDuration(record.duration_sec)}</td>
-                <td>{record.comment || '-'}</td>
+                <td>
+                  <div>{formatDate(record.created_at)}</div>
+                  <div style={{ fontSize: '12px', color: 'var(--gray-400)' }}>{formatTime(record.created_at)}</div>
+                </td>
+                <td style={{ fontWeight: 500 }}>{formatDuration(record.duration_sec)}</td>
+                <td style={{ color: record.comment ? 'var(--gray-700)' : 'var(--gray-300)' }}>
+                  {record.comment || '—'}
+                </td>
               </tr>
             ))}
           </tbody>
