@@ -12,28 +12,14 @@
     var APP_URL = BACKEND_URL;
 
     window.TrelloPowerUp.initialize({
-      'card-buttons': function(t, opts) {
-        return [{
-          text: 'Time Tracker',
-          callback: function(t) {
-            var ctx = t.getContext();
-            return t.popup({
-              title: 'Time Tracker',
-              url: APP_URL + '/?view=card-timer&cardId=' + ctx.card + '&memberId=' + ctx.member,
-              height: 500,
-            });
-          }
-        }];
-      },
-
       'card-back-section': function(t, opts) {
         return {
           title: 'Time Tracking',
           icon: APP_URL + '/icons/icon.png',
           content: {
             type: 'iframe',
-            url: APP_URL + '/?view=card-history&cardId=' + t.getContext().card + '&memberId=' + t.getContext().member,
-            height: 230
+            url: APP_URL + '/?view=card-timer&cardId=' + t.getContext().card + '&memberId=' + t.getContext().member,
+            height: 520
           }
         };
       },

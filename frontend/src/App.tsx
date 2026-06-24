@@ -13,22 +13,15 @@ function App() {
 
   if (view === 'card-timer' && cardId) {
     return (
-      <div className="app">
-        <h1>Time Tracker</h1>
+      <div className="app card-timer-view">
         <TimerButton memberId={memberId} cardId={cardId} />
-        <div style={{ marginTop: 24 }}>
-          <EstimateForm memberId={memberId} cardId={cardId} />
-        </div>
-        <div style={{ marginTop: 24 }}>
-          <ManualEntryForm
-            memberId={memberId}
-            cardId={cardId}
-            onSuccess={() => window.location.reload()}
-          />
-        </div>
-        <div style={{ marginTop: 24 }}>
-          <CardHistory memberId={memberId} cardId={cardId} />
-        </div>
+        <EstimateForm memberId={memberId} cardId={cardId} />
+        <ManualEntryForm
+          memberId={memberId}
+          cardId={cardId}
+          onSuccess={() => window.location.reload()}
+        />
+        <CardHistory memberId={memberId} cardId={cardId} />
       </div>
     )
   }

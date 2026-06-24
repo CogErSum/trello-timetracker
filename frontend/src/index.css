@@ -481,6 +481,30 @@ button:disabled {
   animation: pulse 2s ease-in-out infinite;
 }
 
+.card-timer-view {
+  padding: 12px;
+}
+
+.card-timer-view .manual-entry-form {
+  padding: 12px;
+  margin-top: 12px;
+}
+
+.card-timer-view .card-history {
+  margin-top: 12px;
+}
+
+.card-timer-view .records-table th,
+.card-timer-view .records-table td {
+  padding: 8px 10px;
+  font-size: 12px;
+}
+
+.card-timer-view h3 {
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
 @media (max-width: 768px) {
   .app {
     padding: 16px;
