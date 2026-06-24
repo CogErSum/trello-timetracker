@@ -481,101 +481,285 @@ button:disabled {
   animation: pulse 2s ease-in-out infinite;
 }
 
+/* ========== Card Timer View (compact iframe) ========== */
+
 .card-timer-view {
-  padding: 8px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
-.card-timer-view .manual-entry-form {
-  padding: 8px;
-  margin-top: 8px;
+.tt-row {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
 }
 
-.card-timer-view .card-history {
-  margin-top: 8px;
+/* Timer */
+.tt-timer {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
 }
 
-.card-timer-view .records-table th,
-.card-timer-view .records-table td {
-  padding: 6px 8px;
+.tt-timer-display {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--gray-800);
+  letter-spacing: 0.02em;
+  flex: 1;
+  text-align: center;
+}
+
+.tt-btn {
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+
+.tt-btn:hover { transform: translateY(-1px); }
+.tt-btn:active { transform: translateY(0); }
+
+.tt-btn-start {
+  background: var(--success);
+  color: white;
+}
+.tt-btn-start:hover { background: var(--success-hover); }
+
+.tt-btn-stop {
+  background: var(--danger);
+  color: white;
+}
+.tt-btn-stop:hover { background: var(--danger-hover); }
+
+.tt-btn-save {
+  background: var(--success);
+  color: white;
+  padding: 4px 8px;
   font-size: 11px;
 }
 
-.card-timer-view h3 {
-  font-size: 12px;
-  margin-bottom: 6px;
+.tt-btn-add {
+  background: var(--primary);
+  color: white;
 }
 
-.card-timer-view .total-time {
-  font-size: 14px;
-  margin-bottom: 8px;
+.tt-btn:disabled {
+  background: var(--gray-200);
+  color: var(--gray-400);
+  cursor: not-allowed;
+  transform: none;
 }
 
-.card-timer-view .form-group {
-  margin-bottom: 8px;
+/* Estimate */
+.tt-estimate {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
 }
 
-.card-timer-view .form-group label {
+.tt-estimate-label {
   font-size: 11px;
-  margin-bottom: 3px;
+  font-weight: 600;
+  color: var(--warning);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-.card-timer-view .form-group input,
-.card-timer-view .form-group textarea {
-  padding: 6px 8px;
+.tt-estimate-inputs {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+}
+
+.tt-estimate-inputs input {
+  width: 36px;
+  padding: 4px;
+  border: 1px solid var(--gray-200);
+  border-radius: 4px;
   font-size: 12px;
+  text-align: center;
+  font-weight: 500;
 }
 
-.card-timer-view .form-group textarea {
-  min-height: 48px;
+.tt-estimate-inputs input:focus {
+  outline: none;
+  border-color: var(--warning);
+  box-shadow: 0 0 0 2px #fef3c7;
 }
 
-.card-timer-view .timer-button {
-  gap: 10px;
+.tt-estimate-inputs span {
+  font-size: 11px;
+  color: var(--gray-400);
 }
 
-.card-timer-view .timer-display {
-  font-size: 18px;
-  padding: 8px 12px;
+/* Manual entry */
+.tt-manual {
+  padding: 8px 10px;
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  margin-top: 6px;
 }
 
-.card-timer-view .timer-button button {
-  padding: 8px 16px;
-  font-size: 13px;
+.tt-manual-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
 }
 
-.card-timer-view .duration-input input {
-  width: 52px;
-  padding: 6px;
+.tt-date {
+  padding: 4px 6px;
+  border: 1px solid var(--gray-200);
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+.tt-date:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.tt-manual-dur {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.tt-manual-dur input {
+  width: 36px;
+  padding: 4px;
+  border: 1px solid var(--gray-200);
+  border-radius: 4px;
   font-size: 12px;
+  text-align: center;
+  font-weight: 500;
 }
 
-.card-timer-view .duration-input span {
-  font-size: 12px;
+.tt-manual-dur input:focus {
+  outline: none;
+  border-color: var(--primary);
 }
 
-.collapse-toggle {
+.tt-manual-dur span {
+  font-size: 11px;
+  color: var(--gray-400);
+}
+
+.tt-comment {
+  width: 100%;
+  margin-top: 4px;
+  padding: 4px 6px;
+  border: 1px solid var(--gray-200);
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+.tt-comment:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+/* History */
+.tt-history {
+  margin-top: 6px;
+}
+
+.tt-history-toggle {
   background: none;
   border: none;
-  color: var(--gray-500);
-  font-size: 12px;
-  cursor: pointer;
   padding: 4px 0;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--gray-500);
+  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 4px;
   transition: var(--transition);
 }
 
-.collapse-toggle:hover {
+.tt-history-toggle:hover {
   color: var(--primary);
 }
 
-.collapse-toggle svg {
-  transition: transform 0.2s ease;
+.tt-history-arrow {
+  display: inline-block;
+  transition: transform 0.15s ease;
+  font-size: 10px;
 }
 
-.collapse-toggle.open svg {
+.tt-history-arrow.open {
   transform: rotate(90deg);
+}
+
+.tt-history-list {
+  margin-top: 4px;
+  border: 1px solid var(--gray-100);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.tt-history-item {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 4px 8px;
+  font-size: 11px;
+  border-bottom: 1px solid var(--gray-50);
+}
+
+.tt-history-item:last-child {
+  border-bottom: none;
+}
+
+.tt-history-item:hover {
+  background: var(--gray-50);
+}
+
+.tt-history-date {
+  color: var(--gray-500);
+  min-width: 52px;
+}
+
+.tt-history-dur {
+  font-weight: 600;
+  color: var(--gray-800);
+  min-width: 40px;
+}
+
+.tt-history-comment {
+  color: var(--gray-400);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.tt-loading {
+  font-size: 11px;
+  color: var(--gray-400);
+  padding: 8px 0;
 }
 
 @media (max-width: 768px) {
@@ -671,5 +855,9 @@ button:disabled {
 
   .manual-entry-form {
     padding: 16px;
+  }
+
+  .card-timer-view .tt-row {
+    flex-direction: column;
   }
 }

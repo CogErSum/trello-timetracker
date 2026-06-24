@@ -8,7 +8,6 @@ interface CardHistoryProps {
 
 interface TimeRecord {
   id: string;
-  trello_card_id: string;
   duration_sec: number;
   comment: string | null;
   created_at: string;
@@ -37,51 +36,33 @@ export function CardHistory({ memberId, cardId }: CardHistoryProps) {
     }
   };
 
-  const formatDuration = (seconds: number) => {
-    const h = Math.floor(seconds / 3600);
-    const m = Math.floor((seconds % 3600) / 60);
-    if (h > 0) return `${h}h ${m}m`;
-    return `${m}m`;
+  const fmt = (sec: number) => {
+    const h = Math.floor(sec / 3600);
+    const m = Math.floor((sec % 3600) / 60);
+    return h > 0 ? `${h}h ${m}m` : `${m}m`;
   };
 
-  const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('ru-RU', { day: '2-digit', month: 'short' });
-  };
+  const fmtDate = (d: string) => new Date(d).toLocaleDateString('ru-RU', { day: '2-digit', month: 'short' });
 
-  if (loading) {
-    return <div className="loading" style={{ height: 40, fontSize: 11 }}>Loading</div>;
-  }
+  if (loading) return <div className="tt-loading">Loading...</div>;
 
   return (
-    <div className="card-history">
-      <button className={`collapse-toggle ${expanded ? 'open' : ''}`} onClick={() => setExpanded(!expanded)}>
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <polyline points="9 18 15 12 9 6"/>
-        </svg>
-        History ({records.length}) · {formatDuration(totalSec)}
+    <div className="tt-history">
+      <button className="tt-history-toggle" onClick={() => setExpanded(!expanded)}>
+        <span className={`tt-history-arrow ${expanded ? 'open' : ''}`}>▸</span>
+        History · {records.length} entries · {fmt(totalSec)}
       </button>
 
       {expanded && records.length > 0 && (
-        <table className="records-table" style={{ marginTop: 6 }}>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Duration</th>
-              <th>Note</th>
-            </tr>
-          </thead>
-          <tbody>
-            {records.map((record) => (
-              <tr key={record.id}>
-                <td>{formatDate(record.created_at)}</td>
-                <td style={{ fontWeight: 500 }}>{formatDuration(record.duration_sec)}</td>
-                <td style={{ color: record.comment ? 'var(--gray-600)' : 'var(--gray-300)', maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {record.comment || '—'}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="tt-history-list">
+          {records.map((r) => (
+            <div key={r.id} className="tt-history-item">
+              <span className="tt-history-date">{fmtDate(r.created_at)}</span>
+              <span className="tt-history-dur">{fmt(r.duration_sec)}</span>
+              {r.comment && <span className="tt-history-comment">{r.comment}</span>}
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );

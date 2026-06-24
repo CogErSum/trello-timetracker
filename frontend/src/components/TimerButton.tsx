@@ -76,23 +76,17 @@ export function TimerButton({ memberId, cardId }: TimerButtonProps) {
   };
 
   return (
-    <div className="timer-button">
+    <div className="tt-timer">
       {activeTimer ? (
         <>
-          <span className="timer-display timer-active">{formatTime(elapsed)}</span>
-          <button onClick={handleStop} disabled={loading} style={{ background: 'var(--danger)' }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <rect x="6" y="6" width="12" height="12" rx="2"/>
-            </svg>
+          <span className="tt-timer-display timer-active">{formatTime(elapsed)}</span>
+          <button onClick={handleStop} disabled={loading} className="tt-btn tt-btn-stop">
             Stop
           </button>
         </>
       ) : (
-        <button onClick={handleStart} disabled={loading} style={{ background: 'var(--success)' }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <polygon points="5,3 19,12 5,21"/>
-          </svg>
-          Start Timer
+        <button onClick={handleStart} disabled={loading} className="tt-btn tt-btn-start">
+          Start
         </button>
       )}
     </div>

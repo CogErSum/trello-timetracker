@@ -14,8 +14,10 @@ function App() {
   if (view === 'card-timer' && cardId) {
     return (
       <div className="app card-timer-view">
-        <TimerButton memberId={memberId} cardId={cardId} />
-        <EstimateForm memberId={memberId} cardId={cardId} />
+        <div className="tt-row">
+          <TimerButton memberId={memberId} cardId={cardId} />
+          <EstimateForm memberId={memberId} cardId={cardId} />
+        </div>
         <ManualEntryForm
           memberId={memberId}
           cardId={cardId}
@@ -28,7 +30,7 @@ function App() {
 
   if (view === 'card-history' && cardId) {
     return (
-      <div className="app">
+      <div className="app card-timer-view">
         <CardHistory memberId={memberId} cardId={cardId} />
       </div>
     )
