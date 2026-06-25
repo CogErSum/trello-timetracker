@@ -4,8 +4,6 @@ import { api } from '../services/api';
 interface ExportButtonProps {
   memberId: string;
   cardId?: string;
-  dateFrom?: string;
-  dateTo?: string;
 }
 
 interface Board {
@@ -13,10 +11,12 @@ interface Board {
   name: string;
 }
 
-export function ExportButton({ memberId, cardId, dateFrom, dateTo }: ExportButtonProps) {
+export function ExportButton({ memberId, cardId }: ExportButtonProps) {
   const [boards, setBoards] = useState<Board[]>([]);
   const [selectedBoards, setSelectedBoards] = useState<Set<string>>(new Set());
   const [showBoards, setShowBoards] = useState(false);
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
 
   useEffect(() => {
     fetchBoards();
@@ -51,12 +51,14 @@ export function ExportButton({ memberId, cardId, dateFrom, dateTo }: ExportButto
   const handleExport = (format: 'csv' | 'xlsx') => {
     const url = api.export.download(memberId, format, {
       cardId,
-      dateFrom,
-      dateTo,
+      dateFrom: dateFrom || undefined,
+      dateTo: dateTo || undefined,
       boardIds: selectedBoards.size > 0 ? Array.from(selectedBoards) : undefined,
     });
     window.open(url, '_blank');
   };
+
+  const hasFilters = selectedBoards.size > 0 || dateFrom || dateTo;
 
   return (
     <div className="tt-export">
@@ -70,23 +72,39 @@ export function ExportButton({ memberId, cardId, dateFrom, dateTo }: ExportButto
         </div>
         <span className="tt-export-title">Export</span>
         <button className="tt-export-toggle" onClick={() => setShowBoards(!showBoards)}>
-          {showBoards ? 'Hide boards' : 'Select boards'}
-          {selectedBoards.size > 0 && <span className="tt-export-count">{selectedBoards.size}</span>}
+          {showBoards ? 'Filters' : 'Filters'}
+          {hasFilters && <span className="tt-export-count">{(selectedBoards.size > 0 ? 1 : 0) + (dateFrom ? 1 : 0) + (dateTo ? 1 : 0)}</span>}
         </button>
       </div>
 
       {showBoards && (
-        <div className="tt-boards-list">
-          <label className="tt-board-item tt-board-all">
-            <input type="checkbox" checked={selectedBoards.size === boards.length && boards.length > 0} onChange={selectAll} />
-            <span>All boards</span>
-          </label>
-          {boards.map((board) => (
-            <label key={board.id} className="tt-board-item">
-              <input type="checkbox" checked={selectedBoards.has(board.id)} onChange={() => toggleBoard(board.id)} />
-              <span>{board.name}</span>
+        <div className="tt-filters-panel">
+          <div className="tt-date-filters">
+            <div className="tt-date-filter">
+              <label>From</label>
+              <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className="tt-date" />
+            </div>
+            <div className="tt-date-filter">
+              <label>To</label>
+              <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className="tt-date" />
+            </div>
+            {(dateFrom || dateTo) && (
+              <button className="tt-filter-clear" onClick={() => { setDateFrom(''); setDateTo(''); }}>Clear</button>
+            )}
+          </div>
+
+          <div className="tt-boards-section">
+            <label className="tt-board-item tt-board-all">
+              <input type="checkbox" checked={selectedBoards.size === boards.length && boards.length > 0} onChange={selectAll} />
+              <span>All boards</span>
             </label>
-          ))}
+            {boards.map((board) => (
+              <label key={board.id} className="tt-board-item">
+                <input type="checkbox" checked={selectedBoards.has(board.id)} onChange={() => toggleBoard(board.id)} />
+                <span>{board.name}</span>
+              </label>
+            ))}
+          </div>
         </div>
       )}
 
