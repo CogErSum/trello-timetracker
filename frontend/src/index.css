@@ -869,16 +869,13 @@ body {
 }
 
 .dp-dropdown {
-  position: absolute;
-  bottom: calc(100% + 4px);
-  left: 0;
-  z-index: 100;
   background: white;
   border-radius: var(--radius-sm);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.04);
   padding: 12px;
   min-width: 220px;
   animation: dpIn 0.15s ease;
+  margin-top: 4px;
 }
 
 @keyframes dpIn {
