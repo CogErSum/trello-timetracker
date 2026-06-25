@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { api } from '../services/api';
-import { DatePicker } from './DatePicker';
 
 interface ExportButtonProps {
   memberId: string;
@@ -84,11 +83,11 @@ export function ExportButton({ memberId, cardId }: ExportButtonProps) {
           <div className="tt-date-filters">
             <div className="tt-date-filter">
               <label>From</label>
-              <DatePicker value={dateFrom} onChange={setDateFrom} placeholder="Start" maxDate={today} compact />
+              <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} max={today} className="tt-date" />
             </div>
             <div className="tt-date-filter">
               <label>To</label>
-              <DatePicker value={dateTo} onChange={setDateTo} placeholder="End" maxDate={today} compact />
+              <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} max={today} className="tt-date" />
             </div>
             {(dateFrom || dateTo) && (
               <button className="tt-filter-clear" onClick={() => { setDateFrom(''); setDateTo(''); }}>Clear</button>
