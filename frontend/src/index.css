@@ -828,33 +828,27 @@ body {
   border-radius: var(--radius-sm);
   box-shadow: 0 4px 16px rgba(0,0,0,0.1);
   padding: 6px 8px;
-  width: fit-content;
-  min-width: 150px;
   animation: dpIn 0.12s ease;
-  overflow: hidden;
 }
-.dp-compact .dp-cal { padding: 4px 5px; min-width: 0; max-width: 100%; }
-.dp-compact .dp-d { font-size: 7px; aspect-ratio: 1; }
-.dp-compact .dp-wk span { font-size: 6px; }
-.dp-compact .dp-ym { font-size: 9px; }
-.dp-compact .dp-arw { font-size: 10px; width: 14px; height: 14px; }
-.dp-compact .dp-input { padding: 4px 6px; height: 26px; }
-.dp-compact .dp-val { font-size: 10px; }
-.dp-compact .dp-ph { font-size: 10px; }
+
+.dp-compact .dp-cal { padding: 4px 6px; }
 
 @keyframes dpIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
 
 .dp-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
 .dp-ym { font-size: 11px; font-weight: 600; color: var(--tmst-text); }
+.dp-compact .dp-ym { font-size: 10px; }
 .dp-arw {
   background: none; border: none; font-size: 14px; color: var(--tmst-text-secondary);
   width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;
   border-radius: 4px; cursor: pointer; transition: var(--transition);
 }
+.dp-compact .dp-arw { width: 18px; height: 18px; font-size: 12px; }
 .dp-arw:hover { background: var(--tmst-bg); color: var(--tmst); }
 
 .dp-wk { display: grid; grid-template-columns: repeat(7,1fr); margin-bottom: 1px; }
 .dp-wk span { font-size: 8px; font-weight: 600; color: var(--tmst-text-secondary); text-align: center; padding: 1px 0; text-transform: uppercase; }
+.dp-compact .dp-wk span { font-size: 7px; }
 
 .dp-g { display: grid; grid-template-columns: repeat(7,1fr); gap: 1px; }
 .dp-d {
@@ -863,6 +857,7 @@ body {
   border-radius: 4px; cursor: pointer; transition: 0.12s; box-sizing: border-box;
   aspect-ratio: 1;
 }
+.dp-compact .dp-d { font-size: 8px; }
 .dp-d:hover:not(.dp-e):not(.dp-dis) { background: var(--tmst-bg); color: var(--tmst); }
 .dp-sel { background: var(--tmst) !important; color: white !important; font-weight: 700; }
 .dp-tod:not(.dp-sel) { border: 1.5px solid var(--tmst); font-weight: 700; color: var(--tmst); }
