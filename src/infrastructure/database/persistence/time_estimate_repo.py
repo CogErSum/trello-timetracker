@@ -53,10 +53,11 @@ class TimeEstimateRepository:
         await self.session.flush()
         return True
 
-    async def get_board_estimates(self, trello_member_id: str) -> dict[str, dict]:
-        result = await self.session.execute(
-            select(TimeEstimate).where(TimeEstimate.trello_member_id == trello_member_id)
-        )
+    async def get_board_estimates(self, trello_member_id: str | None = None) -> dict[str, dict]:
+        query = select(TimeEstimate)
+        if trello_member_id:
+            query = query.where(TimeEstimate.trello_member_id == trello_member_id)
+        result = await self.session.execute(query)
         estimates = result.scalars().all()
         return {e.trello_card_id: self._to_dict(e) for e in estimates}
 

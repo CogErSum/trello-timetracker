@@ -39,11 +39,60 @@ async def board_time_summary(
     async with async_session_factory() as session:
         time_record_repo = TimeRecordRepository(session)
         records = await time_record_repo.list_all(trello_member_id=member_id)
-        summaries = defaultdict(lambda: {"total_sec": 0, "record_count": 0})
+        summaries = defaultdict(lambda: {"total_sec": 0, "record_count": 0, "members": set()})
         for r in records:
             summaries[r["trello_card_id"]]["total_sec"] += r["duration_sec"]
             summaries[r["trello_card_id"]]["record_count"] += 1
-        return dict(summaries)
+            summaries[r["trello_card_id"]]["members"].add(r["trello_member_id"])
+        result = {}
+        for card_id, data in summaries.items():
+            result[card_id] = {
+                "total_sec": data["total_sec"],
+                "record_count": data["record_count"],
+                "members": list(data["members"]),
+            }
+        return result
+
+
+@router.get("/team-summary")
+async def team_time_summary():
+    from src.infrastructure.database.main import async_session_factory
+    from collections import defaultdict
+    import json
+    import urllib.request
+
+    async with async_session_factory() as session:
+        time_record_repo = TimeRecordRepository(session)
+        records = await time_record_repo.list_all(trello_member_id=None)
+        summaries = defaultdict(lambda: {"total_sec": 0, "record_count": 0, "members": set()})
+        for r in records:
+            summaries[r["trello_card_id"]]["total_sec"] += r["duration_sec"]
+            summaries[r["trello_card_id"]]["record_count"] += 1
+            summaries[r["trello_card_id"]]["members"].add(r["trello_member_id"])
+
+        member_ids = set()
+        for data in summaries.values():
+            member_ids.update(data["members"])
+
+        member_names = {}
+        from src.config.settings import settings
+        if settings.trello.api_key and settings.trello.api_token:
+            for mid in member_ids:
+                try:
+                    url = f"https://api.trello.com/1/members/{mid}?key={settings.trello.api_key}&token={settings.trello.api_token}&fields=fullName"
+                    with urllib.request.urlopen(url, timeout=5) as resp:
+                        member_names[mid] = json.loads(resp.read()).get("fullName", mid)
+                except Exception:
+                    member_names[mid] = mid
+
+        result = {}
+        for card_id, data in summaries.items():
+            result[card_id] = {
+                "total_sec": data["total_sec"],
+                "record_count": data["record_count"],
+                "members": [member_names.get(m, m) for m in data["members"]],
+            }
+        return result
 
 
 @router.post("", response_model=RecordResponse, status_code=201)

@@ -73,3 +73,13 @@ async def board_estimates(
     async with async_session_factory() as session:
         repo = TimeEstimateRepository(session)
         return await repo.get_board_estimates(member_id)
+
+
+@router.get("/team-board")
+async def team_estimates():
+    from src.infrastructure.database.main import async_session_factory
+
+    async with async_session_factory() as session:
+        repo = TimeEstimateRepository(session)
+        result = await repo.get_board_estimates(None)
+        return result

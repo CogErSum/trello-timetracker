@@ -49,13 +49,15 @@ class TimeRecordRepository(ITimeRecordRepository):
 
     async def list_all(
         self,
-        trello_member_id: str,
+        trello_member_id: str | None = None,
         card_id: str | None = None,
         date_from: datetime | None = None,
         date_to: datetime | None = None,
     ) -> list[dict]:
-        query = select(TimeRecord).where(TimeRecord.trello_member_id == trello_member_id)
+        query = select(TimeRecord)
 
+        if trello_member_id:
+            query = query.where(TimeRecord.trello_member_id == trello_member_id)
         if card_id:
             query = query.where(TimeRecord.trello_card_id == card_id)
         if date_from:
