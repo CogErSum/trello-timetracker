@@ -226,12 +226,13 @@ body {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--tmst-peach);
-  background: linear-gradient(135deg, #fff5eb 0%, #ffeed9 100%);
+  color: #b45309;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
   padding: 4px 12px;
   border-radius: 20px;
   flex-shrink: 0;
-  box-shadow: 0 1px 4px rgba(255, 199, 153, 0.2);
+  box-shadow: 0 1px 4px rgba(245, 158, 11, 0.2);
+  border: 1px solid rgba(245, 158, 11, 0.3);
 }
 
 .tt-estimate-inputs {
