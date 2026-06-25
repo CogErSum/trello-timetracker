@@ -242,7 +242,7 @@ body {
 }
 
 .tt-estimate-inputs input {
-  width: 40px;
+  width: 48px;
   padding: 6px 4px;
   border: 1.5px solid var(--tmst-stroke);
   border-radius: var(--radius-xs);
@@ -353,7 +353,7 @@ body {
 }
 
 .tt-manual-dur input {
-  width: 40px;
+  width: 48px;
   padding: 8px 4px;
   border: 1.5px solid var(--tmst-stroke);
   border-radius: var(--radius-xs);
