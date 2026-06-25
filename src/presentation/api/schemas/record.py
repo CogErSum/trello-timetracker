@@ -23,6 +23,7 @@ class RecordResponse(BaseModel):
     comment: str | None = None
     created_at: str | None = None
     updated_at: str | None = None
+    member_name: str | None = None
 
 
 class DashboardResponse(BaseModel):
