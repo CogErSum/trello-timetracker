@@ -11,6 +11,7 @@ interface TimeRecord {
   duration_sec: number;
   comment: string | null;
   created_at: string;
+  member_name: string;
 }
 
 export function CardHistory({ memberId, cardId }: CardHistoryProps) {
@@ -58,6 +59,7 @@ export function CardHistory({ memberId, cardId }: CardHistoryProps) {
         <div className="tt-history-list">
           {records.map((r) => (
             <div key={r.id} className="tt-history-item">
+              <span className="tt-history-member">{r.member_name}</span>
               <span className="tt-history-date">{fmtDate(r.created_at)}</span>
               <span className="tt-history-dur">{fmt(r.duration_sec)}</span>
               {r.comment && <span className="tt-history-comment">{r.comment}</span>}

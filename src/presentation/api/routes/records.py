@@ -129,6 +129,9 @@ async def list_records(
 ):
     from src.infrastructure.database.main import async_session_factory
     from datetime import datetime
+    import json
+    import urllib.request
+    from src.config.settings import settings
 
     async with async_session_factory() as session:
         time_record_repo = TimeRecordRepository(session)
@@ -142,6 +145,21 @@ async def list_records(
             date_from=parsed_date_from,
             date_to=parsed_date_to,
         )
+
+        member_ids = {r["trello_member_id"] for r in records}
+        member_names = {}
+        if settings.trello.api_key and settings.trello.api_token:
+            for mid in member_ids:
+                try:
+                    url = f"https://api.trello.com/1/members/{mid}?key={settings.trello.api_key}&token={settings.trello.api_token}&fields=fullName"
+                    with urllib.request.urlopen(url, timeout=5) as resp:
+                        member_names[mid] = json.loads(resp.read()).get("fullName", mid)
+                except Exception:
+                    member_names[mid] = mid
+
+        for r in records:
+            r["member_name"] = member_names.get(r["trello_member_id"], r["trello_member_id"])
+
         return records
 
 

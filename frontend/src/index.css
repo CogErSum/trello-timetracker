@@ -482,7 +482,7 @@ body {
 
 .tt-history-item {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   align-items: center;
   padding: 8px 12px;
   font-size: 12px;
@@ -496,6 +496,13 @@ body {
 
 .tt-history-item:hover {
   background: rgba(91, 76, 205, 0.04);
+}
+
+.tt-history-member {
+  font-weight: 600;
+  color: var(--tmst);
+  min-width: 60px;
+  font-size: 11px;
 }
 
 .tt-history-date {
