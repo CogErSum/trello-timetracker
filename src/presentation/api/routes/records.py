@@ -140,7 +140,7 @@ async def list_records(
         parsed_date_to = datetime.fromisoformat(date_to) if date_to else None
 
         records = await time_record_repo.list_all(
-            trello_member_id=member_id,
+            trello_member_id=None if card_id else member_id,
             card_id=card_id,
             date_from=parsed_date_from,
             date_to=parsed_date_to,
