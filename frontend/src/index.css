@@ -535,6 +535,126 @@ body {
   text-align: center;
 }
 
+/* ========== Export & Boards ========== */
+
+.tt-export {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow), 0 0 0 1px rgba(255, 255, 255, 0.8) inset;
+  margin-bottom: 24px;
+}
+
+.tt-export-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tt-export-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--tmst-text);
+  flex: 1;
+}
+
+.tt-export-toggle {
+  background: none;
+  border: none;
+  color: var(--tmst);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  transition: var(--transition);
+}
+
+.tt-export-toggle:hover {
+  background: var(--tmst-bg);
+}
+
+.tt-export-count {
+  background: var(--tmst);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tt-boards-list {
+  margin-top: 12px;
+  padding: 8px 0;
+  border-top: 1px solid var(--tmst-stroke);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.tt-board-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  font-size: 13px;
+  color: var(--tmst-text);
+  cursor: pointer;
+  border-radius: var(--radius-xs);
+  transition: var(--transition);
+}
+
+.tt-board-item:hover {
+  background: var(--tmst-bg);
+}
+
+.tt-board-item input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--tmst);
+  cursor: pointer;
+}
+
+.tt-board-all {
+  font-weight: 600;
+  color: var(--tmst);
+  border-bottom: 1px solid var(--tmst-stroke);
+  margin-bottom: 4px;
+  padding-bottom: 8px;
+}
+
+.tt-export-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.tt-btn-export {
+  flex: 1;
+  background: var(--tmst);
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: var(--radius-xs);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.tt-btn-export:hover {
+  background: var(--tmst-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(91, 76, 205, 0.25);
+}
+
 /* ========== Dashboard ========== */
 
 .app {

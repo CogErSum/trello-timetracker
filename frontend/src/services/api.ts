@@ -100,13 +100,19 @@ export const api = {
   },
 
   export: {
-    download: (memberId: string, format: 'csv' | 'xlsx', params?: { cardId?: string; dateFrom?: string; dateTo?: string }) => {
+    download: (memberId: string, format: 'csv' | 'xlsx', params?: { cardId?: string; dateFrom?: string; dateTo?: string; boardIds?: string[] }) => {
       const searchParams = new URLSearchParams({ format, member_id: memberId });
       if (params?.cardId) searchParams.set('card_id', params.cardId);
       if (params?.dateFrom) searchParams.set('date_from', params.dateFrom);
       if (params?.dateTo) searchParams.set('date_to', params.dateTo);
+      if (params?.boardIds && params.boardIds.length > 0) searchParams.set('board_ids', params.boardIds.join(','));
       return `${API_BASE_URL}/api/v1/export?${searchParams.toString()}`;
     },
+  },
+
+  boards: {
+    list: (memberId: string) =>
+      apiRequest('/api/v1/boards', { memberId }),
   },
 
   estimates: {

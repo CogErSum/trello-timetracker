@@ -65,13 +65,19 @@ class ExportRecordsUseCase:
         card_id: str | None = None,
         date_from: datetime | None = None,
         date_to: datetime | None = None,
+        board_ids: list[str] | None = None,
     ) -> tuple[bytes, str, str]:
         records = await self.time_record_repo.list_all(
-            trello_member_id=trello_member_id,
+            trello_member_id=None,
             card_id=card_id,
             date_from=date_from,
             date_to=date_to,
         )
+
+        if board_ids:
+            from src.application.export.trello_boards import fetch_cards_by_boards
+            card_to_board = fetch_cards_by_boards(board_ids)
+            records = [r for r in records if r["trello_card_id"] in card_to_board]
 
         card_ids = {r["trello_card_id"] for r in records}
         cards_info = fetch_card_names(card_ids)

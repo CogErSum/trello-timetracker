@@ -14,6 +14,7 @@ from src.presentation.api.routes.records import router as records_router
 from src.presentation.api.routes.dashboard import router as dashboard_router
 from src.presentation.api.routes.export import router as export_router
 from src.presentation.api.routes.estimates import router as estimates_router
+from src.presentation.api.routes.boards import router as boards_router
 from src.presentation.api.exception_handlers import register_exception_handlers
 
 logger = logging.getLogger(__name__)
@@ -85,6 +86,7 @@ def create_app() -> FastAPI:
     app.include_router(dashboard_router)
     app.include_router(export_router)
     app.include_router(estimates_router)
+    app.include_router(boards_router)
 
     register_exception_handlers(app)
 
