@@ -84,11 +84,11 @@ export function ExportButton({ memberId, cardId }: ExportButtonProps) {
           <div className="tt-date-filters">
             <div className="tt-date-filter">
               <label>From</label>
-              <DatePicker value={dateFrom} onChange={setDateFrom} placeholder="Start date" maxDate={today} />
+              <DatePicker value={dateFrom} onChange={setDateFrom} placeholder="Start" maxDate={today} compact />
             </div>
             <div className="tt-date-filter">
               <label>To</label>
-              <DatePicker value={dateTo} onChange={setDateTo} placeholder="End date" maxDate={today} />
+              <DatePicker value={dateTo} onChange={setDateTo} placeholder="End" maxDate={today} compact />
             </div>
             {(dateFrom || dateTo) && (
               <button className="tt-filter-clear" onClick={() => { setDateFrom(''); setDateTo(''); }}>Clear</button>
