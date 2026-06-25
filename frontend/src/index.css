@@ -829,11 +829,11 @@ body {
   box-shadow: 0 4px 16px rgba(0,0,0,0.1);
   padding: 6px 8px;
   width: fit-content;
-  min-width: 180px;
+  min-width: 200px;
   animation: dpIn 0.12s ease;
   overflow: hidden;
 }
-.dp-compact .dp-cal { padding: 4px 6px; min-width: 160px; }
+.dp-compact .dp-cal { padding: 4px 6px; min-width: 180px; }
 
 @keyframes dpIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
 
