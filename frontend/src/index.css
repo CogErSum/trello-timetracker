@@ -801,7 +801,8 @@ body {
 
 /* ========== DatePicker ========== */
 
-.dp-root { position: relative; flex: 1; min-width: 0; }
+.dp-root { position: relative; flex: 1; min-width: 0; height: 32px; }
+.dp-compact .dp-root { height: 28px; }
 
 .dp-native {
   position: absolute;
