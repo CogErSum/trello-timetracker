@@ -833,7 +833,11 @@ body {
   animation: dpIn 0.12s ease;
   overflow: hidden;
 }
-.dp-compact .dp-cal { padding: 4px 6px; min-width: 140px; }
+.dp-compact .dp-cal { padding: 4px 6px; min-width: 130px; }
+.dp-compact .dp-d { font-size: 8px; }
+.dp-compact .dp-wk span { font-size: 7px; }
+.dp-compact .dp-ym { font-size: 10px; }
+.dp-compact .dp-arw { font-size: 12px; width: 16px; height: 16px; }
 
 @keyframes dpIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
 
