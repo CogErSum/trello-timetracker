@@ -809,6 +809,181 @@ body {
   background: white;
 }
 
+/* ========== Custom DatePicker ========== */
+
+.dp-root {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.dp-input {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border: 1.5px solid var(--tmst-stroke);
+  border-radius: var(--radius-xs);
+  background: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  transition: var(--transition);
+  min-width: 0;
+}
+
+.dp-input:hover {
+  border-color: var(--tmst-light);
+  background: white;
+}
+
+.dp-icon {
+  color: var(--tmst-text-secondary);
+  flex-shrink: 0;
+}
+
+.dp-value {
+  font-size: 12px;
+  color: var(--tmst-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dp-placeholder {
+  font-size: 12px;
+  color: #aaa;
+}
+
+.dp-clear {
+  margin-left: auto;
+  font-size: 14px;
+  color: var(--tmst-text-secondary);
+  cursor: pointer;
+  padding: 0 2px;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: var(--transition);
+}
+
+.dp-clear:hover {
+  color: var(--danger);
+}
+
+.dp-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 100;
+  background: white;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  padding: 12px;
+  min-width: 220px;
+  animation: dpIn 0.15s ease;
+}
+
+@keyframes dpIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.dp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.dp-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--tmst-text);
+}
+
+.dp-nav {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: var(--tmst-text-secondary);
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-xs);
+  transition: var(--transition);
+}
+
+.dp-nav:hover {
+  background: var(--tmst-bg);
+  color: var(--tmst);
+}
+
+.dp-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0;
+  margin-bottom: 4px;
+}
+
+.dp-weekday {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--tmst-text-secondary);
+  text-align: center;
+  padding: 4px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.dp-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.dp-day {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--tmst-text);
+  background: none;
+  border: none;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.dp-day:hover:not(.dp-day-disabled):not(.dp-day-empty) {
+  background: var(--tmst-bg);
+  color: var(--tmst);
+}
+
+.dp-day-selected {
+  background: var(--tmst) !important;
+  color: white !important;
+  font-weight: 700;
+}
+
+.dp-day-today:not(.dp-day-selected) {
+  border: 1.5px solid var(--tmst);
+  font-weight: 700;
+  color: var(--tmst);
+}
+
+.dp-day-disabled {
+  color: #ddd;
+  cursor: not-allowed;
+}
+
+.dp-day-empty {
+  cursor: default;
+}
+
 .tt-filter-clear {
   background: none;
   border: none;

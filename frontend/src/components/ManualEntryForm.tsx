@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { api } from '../services/api';
+import { DatePicker } from './DatePicker';
 
 interface ManualEntryFormProps {
   memberId: string;
@@ -33,6 +34,8 @@ export function ManualEntryForm({ memberId, cardId, onSuccess }: ManualEntryForm
     }
   };
 
+  const today = new Date().toISOString().split('T')[0];
+
   return (
     <form onSubmit={handleSubmit} className="tt-manual-card">
       <div className="tt-manual-header">
@@ -45,8 +48,7 @@ export function ManualEntryForm({ memberId, cardId, onSuccess }: ManualEntryForm
       </div>
 
       <div className="tt-manual-row">
-        <input type="date" value={date} onChange={(e) => setDate(e.target.value)}
-          max={new Date().toISOString().split('T')[0]} className="tt-date" />
+        <DatePicker value={date} onChange={setDate} maxDate={today} />
 
         <div className="tt-manual-dur">
           <input type="number" min="0" max="23" value={hours}

@@ -8,6 +8,7 @@ interface CardHistoryProps {
 
 interface TimeRecord {
   id: string;
+  trello_member_id: string;
   duration_sec: number;
   comment: string | null;
   created_at: string;

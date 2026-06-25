@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../services/api';
+import { DatePicker } from './DatePicker';
 
 interface ExportButtonProps {
   memberId: string;
@@ -14,7 +15,7 @@ interface Board {
 export function ExportButton({ memberId, cardId }: ExportButtonProps) {
   const [boards, setBoards] = useState<Board[]>([]);
   const [selectedBoards, setSelectedBoards] = useState<Set<string>>(new Set());
-  const [showBoards, setShowBoards] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
 
@@ -59,6 +60,7 @@ export function ExportButton({ memberId, cardId }: ExportButtonProps) {
   };
 
   const hasFilters = selectedBoards.size > 0 || dateFrom || dateTo;
+  const today = new Date().toISOString().split('T')[0];
 
   return (
     <div className="tt-export">
@@ -71,22 +73,22 @@ export function ExportButton({ memberId, cardId }: ExportButtonProps) {
           </svg>
         </div>
         <span className="tt-export-title">Export</span>
-        <button className="tt-export-toggle" onClick={() => setShowBoards(!showBoards)}>
-          {showBoards ? 'Filters' : 'Filters'}
-          {hasFilters && <span className="tt-export-count">{(selectedBoards.size > 0 ? 1 : 0) + (dateFrom ? 1 : 0) + (dateTo ? 1 : 0)}</span>}
+        <button className="tt-export-toggle" onClick={() => setShowFilters(!showFilters)}>
+          Filters
+          {hasFilters && <span className="tt-export-count">●</span>}
         </button>
       </div>
 
-      {showBoards && (
+      {showFilters && (
         <div className="tt-filters-panel">
           <div className="tt-date-filters">
             <div className="tt-date-filter">
               <label>From</label>
-              <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className="tt-date" />
+              <DatePicker value={dateFrom} onChange={setDateFrom} placeholder="Start date" maxDate={today} />
             </div>
             <div className="tt-date-filter">
               <label>To</label>
-              <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className="tt-date" />
+              <DatePicker value={dateTo} onChange={setDateTo} placeholder="End date" maxDate={today} />
             </div>
             {(dateFrom || dateTo) && (
               <button className="tt-filter-clear" onClick={() => { setDateFrom(''); setDateTo(''); }}>Clear</button>
