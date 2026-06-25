@@ -46,6 +46,18 @@ async def seed_member() -> None:
         logger.error(f"Seed failed: {e}")
 
 
+async def auto_create_member(member_id: str) -> None:
+    from src.infrastructure.database.main import async_session_factory
+    from src.infrastructure.database.seed import ensure_member_exists
+
+    try:
+        async with async_session_factory() as session:
+            async with session.begin():
+                await ensure_member_exists(session, member_id)
+    except Exception as e:
+        logger.error(f"Auto-create member failed: {e}")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     await init_db()
