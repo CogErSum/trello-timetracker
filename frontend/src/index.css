@@ -827,34 +827,31 @@ body {
   background: white;
   border-radius: var(--radius-sm);
   box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-  padding: 8px 10px;
-  width: 232px;
-  overflow: hidden;
+  padding: 6px;
   animation: dpIn 0.12s ease;
-  box-sizing: border-box;
+  overflow: hidden;
 }
-.dp-compact .dp-cal { width: 210px; padding: 6px 8px; }
+.dp-compact .dp-cal { padding: 4px; }
 
 @keyframes dpIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
 
-.dp-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-.dp-ym { font-size: 12px; font-weight: 600; color: var(--tmst-text); }
+.dp-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.dp-ym { font-size: 11px; font-weight: 600; color: var(--tmst-text); }
 .dp-arw {
-  background: none; border: none; font-size: 16px; color: var(--tmst-text-secondary);
-  width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;
+  background: none; border: none; font-size: 14px; color: var(--tmst-text-secondary);
+  width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;
   border-radius: 4px; cursor: pointer; transition: var(--transition);
 }
 .dp-arw:hover { background: var(--tmst-bg); color: var(--tmst); }
 
-.dp-wk { display: grid; grid-template-columns: repeat(7,1fr); margin-bottom: 2px; }
-.dp-wk span { font-size: 9px; font-weight: 600; color: var(--tmst-text-secondary); text-align: center; padding: 2px 0; text-transform: uppercase; letter-spacing: 0.03em; }
+.dp-wk { display: flex; gap: 0; margin-bottom: 2px; }
+.dp-wk span { flex: 1; font-size: 8px; font-weight: 600; color: var(--tmst-text-secondary); text-align: center; padding: 1px 0; text-transform: uppercase; }
 
-.dp-g { display: grid; grid-template-columns: repeat(7,1fr); gap: 1px; }
+.dp-g { display: flex; flex-wrap: wrap; gap: 0; }
 .dp-d {
-  width: 100%; aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
-  font-size: 11px; font-weight: 500; color: var(--tmst-text); background: none; border: none;
-  border-radius: 6px; cursor: pointer; transition: 0.12s; min-width: 0; overflow: hidden;
-  box-sizing: border-box;
+  flex: 0 0 calc(100% / 7); aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 500; color: var(--tmst-text); background: none; border: none;
+  border-radius: 4px; cursor: pointer; transition: 0.12s; box-sizing: border-box;
 }
 .dp-d:hover:not(.dp-e):not(.dp-dis) { background: var(--tmst-bg); color: var(--tmst); }
 .dp-sel { background: var(--tmst) !important; color: white !important; font-weight: 700; }
