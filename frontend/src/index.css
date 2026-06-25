@@ -528,6 +528,111 @@ body {
   font-style: italic;
 }
 
+/* History actions */
+.tt-history-actions {
+  display: flex;
+  gap: 2px;
+  margin-left: 4px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.tt-history-item:hover .tt-history-actions {
+  opacity: 1;
+}
+
+.tt-history-action {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  color: var(--tmst-text-secondary);
+  border-radius: 4px;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tt-history-action:hover {
+  background: var(--tmst-bg);
+  color: var(--tmst);
+}
+
+.tt-history-action-delete:hover {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+/* History edit mode */
+.tt-history-edit {
+  padding: 8px 12px;
+  background: rgba(91, 76, 205, 0.04);
+  border-radius: var(--radius-xs);
+  margin: 2px 0;
+}
+
+.tt-history-edit-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.tt-history-edit-row .tt-manual-dur input {
+  width: 36px;
+  padding: 4px;
+  font-size: 12px;
+}
+
+.tt-history-edit-comment {
+  flex: 1;
+  padding: 4px 8px;
+  border: 1px solid var(--tmst-stroke);
+  border-radius: 4px;
+  font-size: 11px;
+  min-width: 0;
+}
+
+.tt-history-edit-comment:focus {
+  outline: none;
+  border-color: var(--tmst);
+}
+
+.tt-history-edit-actions {
+  display: flex;
+  gap: 4px;
+  margin-top: 6px;
+  justify-content: flex-end;
+}
+
+.tt-history-btn-save {
+  background: var(--tmst);
+  color: white;
+  border: none;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tt-history-btn-save:hover {
+  background: var(--tmst-hover);
+}
+
+.tt-history-btn-cancel {
+  background: none;
+  border: none;
+  color: var(--tmst-text-secondary);
+  font-size: 11px;
+  cursor: pointer;
+  padding: 3px 8px;
+}
+
+.tt-history-btn-cancel:hover {
+  color: var(--danger);
+}
+
 .tt-loading {
   font-size: 12px;
   color: var(--tmst-text-secondary);
@@ -674,6 +779,7 @@ body {
   flex-direction: column;
   gap: 4px;
   flex: 1;
+  min-width: 0;
 }
 
 .tt-date-filter label {
@@ -686,10 +792,11 @@ body {
 
 .tt-date-filter .tt-date {
   width: 100%;
-  padding: 6px 8px;
+  min-width: 0;
+  padding: 6px 4px;
   border: 1.5px solid var(--tmst-stroke);
   border-radius: var(--radius-xs);
-  font-size: 12px;
+  font-size: 11px;
   color: var(--tmst-text);
   transition: var(--transition);
   background: rgba(255, 255, 255, 0.6);
