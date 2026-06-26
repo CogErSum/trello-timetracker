@@ -113,7 +113,7 @@ class ExportRecordsUseCase:
                 duration,
                 f"{hours}h {minutes}m",
                 record.get("comment", ""),
-                record.get("created_at", ""),
+                record.get("record_date") or record.get("created_at", ""),
             ])
 
         content = output.getvalue().encode("utf-8")
@@ -140,7 +140,7 @@ class ExportRecordsUseCase:
                 duration,
                 f"{hours}h {minutes}m",
                 record.get("comment", ""),
-                record.get("created_at", ""),
+                record.get("record_date") or record.get("created_at", ""),
             ])
 
         buffer = io.BytesIO()
