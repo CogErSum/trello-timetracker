@@ -8,7 +8,9 @@ interface ManualEntryFormProps {
 }
 
 export function ManualEntryForm({ memberId, cardId, onSuccess }: ManualEntryFormProps) {
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const today = new Date();
+  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  const [date, setDate] = useState(todayStr);
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(0);
   const [comment, setComment] = useState('');
@@ -33,8 +35,6 @@ export function ManualEntryForm({ memberId, cardId, onSuccess }: ManualEntryForm
     }
   };
 
-  const today = new Date().toISOString().split('T')[0];
-
   return (
     <form onSubmit={handleSubmit} className="tt-manual-card">
       <div className="tt-manual-header">
@@ -48,7 +48,7 @@ export function ManualEntryForm({ memberId, cardId, onSuccess }: ManualEntryForm
 
       <div className="tt-manual-row">
         <input type="date" value={date} onChange={(e) => setDate(e.target.value)}
-          max={today} className="tt-date" />
+          max={todayStr} className="tt-date" />
 
         <div className="tt-manual-dur">
           <input type="number" min="0" max="23" value={hours}

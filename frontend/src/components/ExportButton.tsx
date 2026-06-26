@@ -59,7 +59,8 @@ export function ExportButton({ memberId, cardId }: ExportButtonProps) {
   };
 
   const hasFilters = selectedBoards.size > 0 || dateFrom || dateTo;
-  const today = new Date().toISOString().split('T')[0];
+  const todayObj = new Date();
+  const today = `${todayObj.getFullYear()}-${String(todayObj.getMonth() + 1).padStart(2, '0')}-${String(todayObj.getDate()).padStart(2, '0')}`;
 
   return (
     <div className="tt-export">
