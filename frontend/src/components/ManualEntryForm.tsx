@@ -11,19 +11,21 @@ export function ManualEntryForm({ memberId, cardId, onSuccess }: ManualEntryForm
   const today = new Date();
   const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
   const [date, setDate] = useState(todayStr);
-  const [hours, setHours] = useState(0);
-  const [minutes, setMinutes] = useState(0);
+  const [hours, setHours] = useState('');
+  const [minutes, setMinutes] = useState('');
   const [comment, setComment] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (hours === 0 && minutes === 0) return;
+    const h = Number(hours) || 0;
+    const m = Number(minutes) || 0;
+    if (h === 0 && m === 0) return;
     setLoading(true);
     try {
       await api.records.create(memberId, {
         cardId,
-        durationMin: hours * 60 + minutes,
+        durationMin: h * 60 + m,
         date,
         comment: comment || undefined,
       });
@@ -34,6 +36,8 @@ export function ManualEntryForm({ memberId, cardId, onSuccess }: ManualEntryForm
       setLoading(false);
     }
   };
+
+  const canSubmit = (Number(hours) || 0) > 0 || (Number(minutes) || 0) > 0;
 
   return (
     <form onSubmit={handleSubmit} className="tt-manual-card">
@@ -52,14 +56,14 @@ export function ManualEntryForm({ memberId, cardId, onSuccess }: ManualEntryForm
 
         <div className="tt-manual-dur">
           <input type="number" min="0" max="23" value={hours}
-            onChange={(e) => setHours(Number(e.target.value))} />
+            onChange={(e) => setHours(e.target.value)} />
           <span>h</span>
           <input type="number" min="0" max="59" value={minutes}
-            onChange={(e) => setMinutes(Number(e.target.value))} />
+            onChange={(e) => setMinutes(e.target.value)} />
           <span>m</span>
         </div>
 
-        <button type="submit" disabled={loading || (hours === 0 && minutes === 0)} className="tt-btn tt-btn-add">
+        <button type="submit" disabled={loading || !canSubmit} className="tt-btn tt-btn-add">
           + Add
         </button>
       </div>
