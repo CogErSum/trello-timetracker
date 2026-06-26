@@ -171,39 +171,42 @@ async def update_record(
 ):
     from src.infrastructure.database.main import async_session_factory
     from uuid import UUID
-    import logging
-    logger = logging.getLogger(__name__)
+    from datetime import datetime
 
     async with async_session_factory() as session:
-        time_record_repo = TimeRecordRepository(session)
+        from sqlalchemy import select
+        from src.infrastructure.database.tables.time_record import TimeRecord
 
-        existing = await time_record_repo.get_by_id(UUID(record_id))
-        logger.info(f"Update record: id={record_id}, member={member_id}, existing={existing is not None}")
-        if not existing or existing["trello_member_id"] != member_id:
+        result = await session.execute(select(TimeRecord).where(TimeRecord.id == UUID(record_id)))
+        record = result.scalar_one_or_none()
+        if not record or record.trello_member_id != member_id:
             raise HTTPException(status_code=404, detail="Record not found")
 
-        duration_sec = request.duration_min * 60 if request.duration_min is not None else None
-        record_date = None
-        if request.record_date:
-            from datetime import datetime
+        if request.duration_min is not None:
+            record.duration_sec = request.duration_min * 60
+        if request.comment is not None:
+            record.comment = request.comment
+        if request.record_date is not None:
             try:
-                record_date = datetime.fromisoformat(request.record_date)
+                record.record_date = datetime.fromisoformat(request.record_date)
             except ValueError:
-                record_date = datetime.strptime(request.record_date, "%Y-%m-%d")
+                record.record_date = datetime.strptime(request.record_date, "%Y-%m-%d")
 
-        logger.info(f"Updating: duration_sec={duration_sec}, comment={request.comment}, record_date={record_date}")
-
-        updated = await time_record_repo.update(
-            record_id=UUID(record_id),
-            duration_sec=duration_sec,
-            comment=request.comment,
-            record_date=record_date,
-        )
         await session.commit()
 
-        if updated:
-            updated["member_name"] = existing.get("member_name") or member_id
-        return updated
+        return {
+            "id": str(record.id),
+            "trello_member_id": record.trello_member_id,
+            "trello_card_id": record.trello_card_id,
+            "start_time": record.start_time.isoformat() if record.start_time else None,
+            "end_time": record.end_time.isoformat() if record.end_time else None,
+            "duration_sec": record.duration_sec,
+            "comment": record.comment,
+            "record_date": record.record_date.isoformat() if record.record_date else None,
+            "created_at": record.created_at.isoformat() if record.created_at else None,
+            "updated_at": record.updated_at.isoformat() if record.updated_at else None,
+            "member_name": member_id,
+        }
 
 
 @router.delete("/{record_id}", status_code=204)
