@@ -25,6 +25,7 @@ export function CardHistory({ memberId, cardId }: CardHistoryProps) {
   const [editHours, setEditHours] = useState(0);
   const [editMinutes, setEditMinutes] = useState(0);
   const [editComment, setEditComment] = useState('');
+  const [editDate, setEditDate] = useState('');
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -60,6 +61,8 @@ export function CardHistory({ memberId, cardId }: CardHistoryProps) {
     setEditHours(Math.floor(record.duration_sec / 3600));
     setEditMinutes(Math.floor((record.duration_sec % 3600) / 60));
     setEditComment(record.comment || '');
+    const d = record.record_date || record.created_at;
+    setEditDate(d ? d.split('T')[0] : '');
   };
 
   const cancelEdit = () => {
@@ -72,6 +75,7 @@ export function CardHistory({ memberId, cardId }: CardHistoryProps) {
       await api.records.update(memberId, recordId, {
         durationMin: editHours * 60 + editMinutes,
         comment: editComment || undefined,
+        date: editDate || undefined,
       });
       setEditingId(null);
       await fetchRecords();
@@ -111,6 +115,8 @@ export function CardHistory({ memberId, cardId }: CardHistoryProps) {
             editingId === r.id ? (
               <div key={r.id} className="tt-history-edit">
                 <div className="tt-history-edit-row">
+                  <input type="date" value={editDate} onChange={(e) => setEditDate(e.target.value)}
+                    className="tt-date" style={{ width: 110, flexShrink: 0 }} />
                   <div className="tt-manual-dur">
                     <input type="number" min="0" max="23" value={editHours}
                       onChange={(e) => setEditHours(Number(e.target.value))} />

@@ -180,10 +180,15 @@ async def update_record(
             raise HTTPException(status_code=404, detail="Record not found")
 
         duration_sec = request.duration_min * 60 if request.duration_min is not None else None
+        record_date = None
+        if request.record_date:
+            from datetime import datetime
+            record_date = datetime.fromisoformat(request.record_date)
         record = await time_record_repo.update(
             record_id=UUID(record_id),
             duration_sec=duration_sec,
             comment=request.comment,
+            record_date=record_date,
         )
         await session.commit()
         return record

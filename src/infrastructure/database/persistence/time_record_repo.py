@@ -76,6 +76,7 @@ class TimeRecordRepository(ITimeRecordRepository):
         record_id: UUID,
         duration_sec: int | None = None,
         comment: str | None = None,
+        record_date: datetime | None = None,
     ) -> dict | None:
         result = await self.session.execute(select(TimeRecord).where(TimeRecord.id == record_id))
         record = result.scalar_one_or_none()
@@ -86,6 +87,8 @@ class TimeRecordRepository(ITimeRecordRepository):
             record.duration_sec = duration_sec
         if comment is not None:
             record.comment = comment
+        if record_date is not None:
+            record.record_date = record_date
 
         await self.session.flush()
         return self._to_dict(record)

@@ -11,6 +11,7 @@ class CreateRecordRequest(BaseModel):
 class UpdateRecordRequest(BaseModel):
     duration_min: int | None = None
     comment: str | None = None
+    record_date: str | None = None
 
 
 class RecordResponse(BaseModel):

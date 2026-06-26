@@ -84,7 +84,11 @@ export const api = {
       apiRequest(`/api/v1/records/${recordId}`, {
         method: 'PATCH',
         memberId,
-        body: data,
+        body: {
+          duration_min: data.durationMin,
+          record_date: data.date,
+          comment: data.comment,
+        },
       }),
 
     delete: (memberId: string, recordId: string) =>

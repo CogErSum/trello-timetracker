@@ -79,7 +79,7 @@ class ExportRecordsUseCase:
             card_to_board = fetch_cards_by_boards(board_ids)
             records = [r for r in records if r["trello_card_id"] in card_to_board]
 
-        records = [r for r in records if r["duration_sec"] > 0]
+        records = [r for r in records if r["duration_sec"] >= 60]
 
         card_ids = {r["trello_card_id"] for r in records}
         cards_info = fetch_card_names(card_ids)
