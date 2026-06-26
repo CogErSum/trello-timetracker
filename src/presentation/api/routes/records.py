@@ -183,7 +183,10 @@ async def update_record(
         record_date = None
         if request.record_date:
             from datetime import datetime
-            record_date = datetime.fromisoformat(request.record_date)
+            try:
+                record_date = datetime.fromisoformat(request.record_date)
+            except ValueError:
+                record_date = datetime.strptime(request.record_date, "%Y-%m-%d")
         record = await time_record_repo.update(
             record_id=UUID(record_id),
             duration_sec=duration_sec,
