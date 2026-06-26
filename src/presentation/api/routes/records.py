@@ -171,11 +171,14 @@ async def update_record(
 ):
     from src.infrastructure.database.main import async_session_factory
     from uuid import UUID
+    import logging
+    logger = logging.getLogger(__name__)
 
     async with async_session_factory() as session:
         time_record_repo = TimeRecordRepository(session)
 
         existing = await time_record_repo.get_by_id(UUID(record_id))
+        logger.info(f"Update record: id={record_id}, member={member_id}, existing={existing is not None}")
         if not existing or existing["trello_member_id"] != member_id:
             raise HTTPException(status_code=404, detail="Record not found")
 
@@ -187,6 +190,9 @@ async def update_record(
                 record_date = datetime.fromisoformat(request.record_date)
             except ValueError:
                 record_date = datetime.strptime(request.record_date, "%Y-%m-%d")
+
+        logger.info(f"Updating: duration_sec={duration_sec}, comment={request.comment}, record_date={record_date}")
+
         updated = await time_record_repo.update(
             record_id=UUID(record_id),
             duration_sec=duration_sec,
@@ -194,7 +200,9 @@ async def update_record(
             record_date=record_date,
         )
         await session.commit()
-        updated["member_name"] = existing.get("member_name") or member_id
+
+        if updated:
+            updated["member_name"] = existing.get("member_name") or member_id
         return updated
 
 
