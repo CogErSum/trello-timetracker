@@ -187,14 +187,15 @@ async def update_record(
                 record_date = datetime.fromisoformat(request.record_date)
             except ValueError:
                 record_date = datetime.strptime(request.record_date, "%Y-%m-%d")
-        record = await time_record_repo.update(
+        updated = await time_record_repo.update(
             record_id=UUID(record_id),
             duration_sec=duration_sec,
             comment=request.comment,
             record_date=record_date,
         )
         await session.commit()
-        return record
+        updated["member_name"] = existing.get("member_name") or member_id
+        return updated
 
 
 @router.delete("/{record_id}", status_code=204)
