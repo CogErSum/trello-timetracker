@@ -14,24 +14,15 @@ interface DashboardData {
     trello_card_id: string;
     duration_sec: number;
     comment: string | null;
+    record_date: string | null;
     created_at: string;
   }>;
-}
-
-interface Filters {
-  dateFrom: string;
-  dateTo: string;
-  cardId: string;
 }
 
 export function Dashboard({ memberId }: DashboardProps) {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState<Filters>({
-    dateFrom: '',
-    dateTo: '',
-    cardId: '',
-  });
+  const [cardNames, setCardNames] = useState<Record<string, string>>({});
 
   useEffect(() => {
     fetchDashboard();
@@ -42,7 +33,15 @@ export function Dashboard({ memberId }: DashboardProps) {
     try {
       const result = await api.dashboard.get(memberId) as DashboardData;
       setData(result);
-    } catch {
+
+      const cardIds = [...new Set(result.recent_records.map(r => r.trello_card_id))];
+      if (cardIds.length > 0) {
+        try {
+          const names = await api.boards.cardNames(cardIds) as Record<string, string>;
+          setCardNames(names);
+        } catch {}
+      }
+    } catch (error) {
       console.error('Failed to fetch dashboard');
     } finally {
       setLoading(false);
@@ -52,21 +51,14 @@ export function Dashboard({ memberId }: DashboardProps) {
   const formatDuration = (seconds: number) => {
     const h = Math.floor(seconds / 3600);
     const m = Math.floor((seconds % 3600) / 60);
-    return `${h}h ${m}m`;
+    if (h > 0 && m > 0) return `${h}h ${m}m`;
+    if (h > 0) return `${h}h`;
+    return `${m}m`;
   };
 
-  const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('ru-RU', {
-      day: 'numeric',
-      month: 'short',
-    });
-  };
-
-  const formatTime = (dateStr: string) => {
-    return new Date(dateStr).toLocaleTimeString('ru-RU', {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+  const formatDate = (r: { record_date: string | null; created_at: string }) => {
+    const d = r.record_date || r.created_at;
+    return new Date(d).toLocaleDateString('ru-RU', { day: '2-digit', month: 'short' });
   };
 
   if (loading) {
@@ -94,27 +86,6 @@ export function Dashboard({ memberId }: DashboardProps) {
         </div>
       </div>
 
-      <div className="filters">
-        <input
-          type="date"
-          value={filters.dateFrom}
-          onChange={(e) => setFilters({ ...filters, dateFrom: e.target.value })}
-          placeholder="From"
-        />
-        <input
-          type="date"
-          value={filters.dateTo}
-          onChange={(e) => setFilters({ ...filters, dateTo: e.target.value })}
-          placeholder="To"
-        />
-        <input
-          type="text"
-          value={filters.cardId}
-          onChange={(e) => setFilters({ ...filters, cardId: e.target.value })}
-          placeholder="Card ID"
-        />
-      </div>
-
       <div className="recent-records">
         <h2>Recent Activity</h2>
         {data.recent_records.length === 0 ? (
@@ -125,18 +96,19 @@ export function Dashboard({ memberId }: DashboardProps) {
               <tr>
                 <th>Date</th>
                 <th>Duration</th>
-                <th>Comment</th>
+                <th>Card</th>
+                <th>Note</th>
               </tr>
             </thead>
             <tbody>
               {data.recent_records.map((record) => (
                 <tr key={record.id}>
-                  <td>
-                    <div>{formatDate(record.created_at)}</div>
-                    <div style={{ fontSize: '12px', color: 'var(--gray-400)' }}>{formatTime(record.created_at)}</div>
+                  <td>{formatDate(record)}</td>
+                  <td style={{ fontWeight: 600 }}>{formatDuration(record.duration_sec)}</td>
+                  <td style={{ color: 'var(--tmst)', fontWeight: 500 }}>
+                    {cardNames[record.trello_card_id] || record.trello_card_id.slice(0, 8) + '...'}
                   </td>
-                  <td style={{ fontWeight: 500 }}>{formatDuration(record.duration_sec)}</td>
-                  <td style={{ color: record.comment ? 'var(--gray-700)' : 'var(--gray-300)' }}>
+                  <td style={{ color: record.comment ? 'var(--tmst-text)' : '#ccc', fontStyle: record.comment ? 'normal' : 'italic' }}>
                     {record.comment || '—'}
                   </td>
                 </tr>

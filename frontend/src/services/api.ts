@@ -117,6 +117,9 @@ export const api = {
   boards: {
     list: (memberId: string) =>
       apiRequest('/api/v1/boards', { memberId }),
+
+    cardNames: (cardIds: string[]) =>
+      apiRequest(`/api/v1/boards/cards?card_ids=${cardIds.join(',')}`),
   },
 
   estimates: {
