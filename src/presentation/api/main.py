@@ -28,6 +28,9 @@ async def init_db() -> None:
     try:
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
+            await conn.execute(text(
+                "ALTER TABLE time_record ADD COLUMN IF NOT EXISTS record_date TIMESTAMP WITH TIME ZONE"
+            ))
         logger.info("Database tables created/verified")
     except Exception as e:
         logger.error(f"DB init failed: {e}")
