@@ -21,6 +21,7 @@ class RecordResponse(BaseModel):
     end_time: str | None = None
     duration_sec: int
     comment: str | None = None
+    record_date: str | None = None
     created_at: str | None = None
     updated_at: str | None = None
     member_name: str | None = None

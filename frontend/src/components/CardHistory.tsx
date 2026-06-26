@@ -12,6 +12,7 @@ interface TimeRecord {
   duration_sec: number;
   comment: string | null;
   created_at: string;
+  record_date: string | null;
   member_name: string;
 }
 
@@ -49,7 +50,10 @@ export function CardHistory({ memberId, cardId }: CardHistoryProps) {
     return h > 0 ? `${h}h ${m}m` : `${m}m`;
   };
 
-  const fmtDate = (d: string) => new Date(d).toLocaleDateString('ru-RU', { day: '2-digit', month: 'short' });
+  const fmtDate = (r: TimeRecord) => {
+    const d = r.record_date || r.created_at;
+    return new Date(d).toLocaleDateString('ru-RU', { day: '2-digit', month: 'short' });
+  };
 
   const startEdit = (record: TimeRecord) => {
     setEditingId(record.id);
@@ -128,7 +132,7 @@ export function CardHistory({ memberId, cardId }: CardHistoryProps) {
             ) : (
               <div key={r.id} className="tt-history-item">
                 <span className="tt-history-member">{r.member_name}</span>
-                <span className="tt-history-date">{fmtDate(r.created_at)}</span>
+                <span className="tt-history-date">{fmtDate(r)}</span>
                 <span className="tt-history-dur">{fmt(r.duration_sec)}</span>
                 {r.comment && <span className="tt-history-comment">{r.comment}</span>}
                 {r.trello_member_id === memberId && (

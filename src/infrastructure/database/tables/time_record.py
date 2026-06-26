@@ -14,3 +14,4 @@ class TimeRecord(IdMixin, DateMixin, Base):
     end_time = Column(DateTime(timezone=True), nullable=True)
     duration_sec = Column(Integer, nullable=False)
     comment = Column(Text, nullable=True)
+    record_date = Column(DateTime(timezone=True), nullable=True)

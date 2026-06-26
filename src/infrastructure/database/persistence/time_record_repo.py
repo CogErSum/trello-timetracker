@@ -20,6 +20,7 @@ class TimeRecordRepository(ITimeRecordRepository):
         start_time: datetime | None = None,
         end_time: datetime | None = None,
         comment: str | None = None,
+        record_date: datetime | None = None,
     ) -> dict:
         record = TimeRecord(
             trello_member_id=trello_member_id,
@@ -28,6 +29,7 @@ class TimeRecordRepository(ITimeRecordRepository):
             start_time=start_time,
             end_time=end_time,
             comment=comment,
+            record_date=record_date,
         )
         self.session.add(record)
         await self.session.flush()
@@ -157,6 +159,7 @@ class TimeRecordRepository(ITimeRecordRepository):
             "end_time": record.end_time.isoformat() if record.end_time else None,
             "duration_sec": record.duration_sec,
             "comment": record.comment,
+            "record_date": record.record_date.isoformat() if record.record_date else None,
             "created_at": record.created_at.isoformat() if record.created_at else None,
             "updated_at": record.updated_at.isoformat() if record.updated_at else None,
         }

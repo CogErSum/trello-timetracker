@@ -29,4 +29,5 @@ class CreateManualRecordUseCase:
             trello_card_id=trello_card_id,
             duration_sec=duration_sec,
             comment=comment,
+            record_date=record_date,
         )
