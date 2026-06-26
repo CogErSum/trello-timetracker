@@ -171,42 +171,26 @@ async def update_record(
 ):
     from src.infrastructure.database.main import async_session_factory
     from uuid import UUID
-    from datetime import datetime
+    from src.application.records.update_record import UpdateRecordUseCase
 
     async with async_session_factory() as session:
-        from sqlalchemy import select
-        from src.infrastructure.database.tables.time_record import TimeRecord
+        time_record_repo = TimeRecordRepository(session)
+        use_case = UpdateRecordUseCase(time_record_repo)
 
-        result = await session.execute(select(TimeRecord).where(TimeRecord.id == UUID(record_id)))
-        record = result.scalar_one_or_none()
-        if not record or record.trello_member_id != member_id:
+        result = await use_case.execute(
+            record_id=UUID(record_id),
+            member_id=member_id,
+            duration_min=request.duration_min,
+            comment=request.comment,
+            record_date=request.record_date,
+        )
+
+        if not result:
             raise HTTPException(status_code=404, detail="Record not found")
 
-        if request.duration_min is not None:
-            record.duration_sec = request.duration_min * 60
-        if request.comment is not None:
-            record.comment = request.comment
-        if request.record_date is not None:
-            try:
-                record.record_date = datetime.fromisoformat(request.record_date)
-            except ValueError:
-                record.record_date = datetime.strptime(request.record_date, "%Y-%m-%d")
-
         await session.commit()
-
-        return {
-            "id": str(record.id),
-            "trello_member_id": record.trello_member_id,
-            "trello_card_id": record.trello_card_id,
-            "start_time": record.start_time.isoformat() if record.start_time else None,
-            "end_time": record.end_time.isoformat() if record.end_time else None,
-            "duration_sec": record.duration_sec,
-            "comment": record.comment,
-            "record_date": record.record_date.isoformat() if record.record_date else None,
-            "created_at": record.created_at.isoformat() if record.created_at else None,
-            "updated_at": record.updated_at.isoformat() if record.updated_at else None,
-            "member_name": member_id,
-        }
+        result["member_name"] = member_id
+        return result
 
 
 @router.delete("/{record_id}", status_code=204)

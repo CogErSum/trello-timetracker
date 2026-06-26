@@ -35,6 +35,10 @@ class TimeRecordRepository(ITimeRecordRepository):
         await self.session.flush()
         return self._to_dict(record)
 
+    async def get_model_by_id(self, record_id: UUID) -> TimeRecord | None:
+        result = await self.session.execute(select(TimeRecord).where(TimeRecord.id == record_id))
+        return result.scalar_one_or_none()
+
     async def get_by_id(self, record_id: UUID) -> dict | None:
         result = await self.session.execute(select(TimeRecord).where(TimeRecord.id == record_id))
         record = result.scalar_one_or_none()
