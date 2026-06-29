@@ -1,3 +1,4 @@
+import asyncio
 import json
 import logging
 import urllib.request
@@ -7,12 +8,11 @@ from src.config.settings import settings
 logger = logging.getLogger(__name__)
 
 
-def post_card_comment(card_id: str, text: str) -> None:
-    if not settings.trello.api_key or not settings.trello.api_token:
-        logger.warning("Trello API credentials not configured, skipping comment")
-        return
-
-    url = f"https://api.trello.com/1/cards/{card_id}/actions/comments"
+def _post_comment_sync(card_id: str, text: str) -> None:
+    url = (
+        f"https://api.trello.com/1/cards/{card_id}/actions/comments"
+        f"?key={settings.trello.api_key}&token={settings.trello.api_token}"
+    )
     data = json.dumps({"text": text}).encode("utf-8")
     req = urllib.request.Request(
         url,
@@ -20,12 +20,17 @@ def post_card_comment(card_id: str, text: str) -> None:
         headers={"Content-Type": "application/json"},
         method="POST",
     )
-    url_with_auth = f"{url}?key={settings.trello.api_key}&token={settings.trello.api_token}"
-    req.full_url = url_with_auth
+    with urllib.request.urlopen(req, timeout=10) as resp:
+        logger.info(f"Posted comment to card {card_id}: {text}")
+
+
+def post_card_comment(card_id: str, text: str) -> None:
+    if not settings.trello.api_key or not settings.trello.api_token:
+        logger.warning("Trello API credentials not configured, skipping comment")
+        return
 
     try:
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            logger.info(f"Posted comment to card {card_id}: {text}")
+        _post_comment_sync(card_id, text)
     except Exception as e:
         logger.error(f"Failed to post comment to card {card_id}: {e}")
 
