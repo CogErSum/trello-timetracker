@@ -95,6 +95,7 @@ class TimeRecordRepository(ITimeRecordRepository):
             record.record_date = record_date
 
         await self.session.flush()
+        await self.session.refresh(record)
         return self._to_dict(record)
 
     async def delete(self, record_id: UUID) -> bool:

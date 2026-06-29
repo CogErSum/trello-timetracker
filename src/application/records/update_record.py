@@ -31,4 +31,5 @@ class UpdateRecordUseCase:
                 record.record_date = datetime.strptime(record_date, "%Y-%m-%d")
 
         await self.time_record_repo.session.flush()
+        await self.time_record_repo.session.refresh(record)
         return self.time_record_repo._to_dict(record)
