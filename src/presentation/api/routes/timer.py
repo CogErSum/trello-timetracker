@@ -6,6 +6,7 @@ from src.infrastructure.database.persistence.active_timer_repo import ActiveTime
 from src.infrastructure.database.persistence.time_record_repo import TimeRecordRepository
 from src.presentation.api.dependencies import get_trello_member_id
 from src.presentation.api.schemas.timer import StartTimerRequest, StartTimerResponse, StopTimerResponse
+from src.infrastructure.trello.comments import post_card_comment
 
 router = APIRouter(prefix="/api/v1/timers", tags=["timers"])
 
@@ -24,6 +25,7 @@ async def start_timer(
         try:
             timer = await use_case.execute(member_id, request.card_id)
             await session.commit()
+            post_card_comment(request.card_id, "[TeamSight] Timer started")
             return StartTimerResponse(timer=timer)
         except ValueError as e:
             raise HTTPException(status_code=409, detail=str(e))
@@ -34,6 +36,7 @@ async def stop_timer(
     member_id: str = Depends(get_trello_member_id),
 ):
     from src.infrastructure.database.main import async_session_factory
+    from src.infrastructure.trello.comments import format_duration_comment
 
     async with async_session_factory() as session:
         active_timer_repo = ActiveTimerRepository(session)
@@ -43,6 +46,7 @@ async def stop_timer(
         try:
             record = await use_case.execute(member_id)
             await session.commit()
+            post_card_comment(record["trello_card_id"], format_duration_comment(record["duration_sec"], "logged"))
             return StopTimerResponse(record=record)
         except ValueError as e:
             raise HTTPException(status_code=404, detail=str(e))

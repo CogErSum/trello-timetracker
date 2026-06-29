@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../services/api';
+import { refreshTrelloBadge } from '../services/trello';
 
 interface CardHistoryProps {
   memberId: string;
@@ -78,6 +79,7 @@ export function CardHistory({ memberId, cardId }: CardHistoryProps) {
         date: editDate || undefined,
       });
       setEditingId(null);
+      refreshTrelloBadge();
       await fetchRecords();
     } catch {
       alert('Failed to update record');
@@ -91,6 +93,7 @@ export function CardHistory({ memberId, cardId }: CardHistoryProps) {
     setSaving(true);
     try {
       await api.records.delete(memberId, recordId);
+      refreshTrelloBadge();
       await fetchRecords();
     } catch {
       alert('Failed to delete record');

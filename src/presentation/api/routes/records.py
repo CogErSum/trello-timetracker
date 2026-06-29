@@ -101,6 +101,7 @@ async def create_record(
     member_id: str = Depends(get_trello_member_id),
 ):
     from src.infrastructure.database.main import async_session_factory
+    from src.infrastructure.trello.comments import post_card_comment, format_duration_comment
 
     async with async_session_factory() as session:
         time_record_repo = TimeRecordRepository(session)
@@ -115,6 +116,8 @@ async def create_record(
                 comment=request.comment,
             )
             await session.commit()
+            duration_sec = request.duration_min * 60
+            post_card_comment(request.card_id, format_duration_comment(duration_sec, "logged"))
             return record
         except ValueError as e:
             raise HTTPException(status_code=422, detail=str(e))
@@ -172,6 +175,7 @@ async def update_record(
     from src.infrastructure.database.main import async_session_factory
     from uuid import UUID
     from src.application.records.update_record import UpdateRecordUseCase
+    from src.infrastructure.trello.comments import post_card_comment
 
     async with async_session_factory() as session:
         time_record_repo = TimeRecordRepository(session)
@@ -189,6 +193,7 @@ async def update_record(
             raise HTTPException(status_code=404, detail="Record not found")
 
         await session.commit()
+        post_card_comment(result["trello_card_id"], f"[TeamSight] Record updated")
         result["member_name"] = member_id
         return result
 
@@ -200,6 +205,7 @@ async def delete_record(
 ):
     from src.infrastructure.database.main import async_session_factory
     from uuid import UUID
+    from src.infrastructure.trello.comments import post_card_comment, format_duration_comment
 
     async with async_session_factory() as session:
         time_record_repo = TimeRecordRepository(session)
@@ -210,3 +216,4 @@ async def delete_record(
 
         await time_record_repo.delete(UUID(record_id))
         await session.commit()
+        post_card_comment(existing["trello_card_id"], format_duration_comment(existing["duration_sec"], "removed"))

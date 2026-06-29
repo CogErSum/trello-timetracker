@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../services/api';
+import { refreshTrelloBadge } from '../services/trello';
 
 interface EstimateFormProps {
   memberId: string;
@@ -44,6 +45,7 @@ export function EstimateForm({ memberId, cardId }: EstimateFormProps) {
       } else if (estimate) {
         await api.estimates.delete(memberId, cardId);
       }
+      refreshTrelloBadge();
       await fetchEstimate();
     } catch {
       alert('Failed to save');

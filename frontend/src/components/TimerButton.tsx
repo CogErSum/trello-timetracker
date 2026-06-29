@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../services/api';
+import { refreshTrelloBadge } from '../services/trello';
 
 interface TimerButtonProps {
   memberId: string;
@@ -46,6 +47,7 @@ export function TimerButton({ memberId, cardId }: TimerButtonProps) {
     try {
       const response = await api.timers.start(memberId, cardId) as { timer: ActiveTimer };
       setActiveTimer(response.timer);
+      refreshTrelloBadge();
     } catch {
       alert('Failed to start timer');
     } finally {
@@ -59,6 +61,7 @@ export function TimerButton({ memberId, cardId }: TimerButtonProps) {
       await api.timers.stop(memberId);
       setActiveTimer(null);
       setElapsed(0);
+      refreshTrelloBadge();
     } catch {
       alert('Failed to stop timer');
     } finally {
