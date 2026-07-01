@@ -27,7 +27,9 @@ export async function apiRequest<T>(
   });
 
   if (!response.ok) {
-    throw new Error(`API error: ${response.status}`);
+    let detail = '';
+    try { detail = (await response.json()).detail || ''; } catch {}
+    throw new Error(`API error: ${response.status} ${detail}`);
   }
 
   if (response.status === 204) {
