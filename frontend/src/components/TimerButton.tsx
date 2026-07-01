@@ -61,8 +61,9 @@ export function TimerButton({ memberId, cardId }: TimerButtonProps) {
       setActiveTimer(response.timer);
       setError(null);
       refreshTrelloBadge();
-    } catch (e: any) {
-      if (e?.message?.includes('409')) {
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      if (msg.includes('409') || msg.includes('Active timer')) {
         setError('Active timer on another card. Stop it first.');
       } else {
         alert('Failed to start timer');
