@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TeamSight Tracker</title>
+  <script src="power-up.js"></script>
+  <script src="config.js"></script>
+</head>
+<body>
+  <script>
+    var APP_URL = BACKEND_URL;
+
+    window.TrelloPowerUp.initialize({
+      'card-back-section': function(t, opts) {
+        return {
+          title: 'Time Tracking',
+          icon: APP_URL + '/icons/icon.png',
+          content: {
+            type: 'iframe',
+            url: APP_URL + '/?view=card-timer&cardId=' + t.getContext().card + '&memberId=' + t.getContext().member,
+            height: 520
+          }
+        };
+      },
+
+      'board-buttons': function(t, opts) {
+        return [{
+          text: 'Dashboard',
+          callback: function(t) {
+            return t.popup({
+              title: 'Dashboard',
+              url: APP_URL + '/?view=dashboard&memberId=' + t.getContext().member,
+              height: 600,
+            });
+          }
+        }];
+      },
+
+      'card-badges': function(t, opts) {
+        var ctx = t.getContext();
+        return Promise.all([
+          fetch(APP_URL + '/api/v1/timers/active', {
+            headers: { 'X-Trello-Member-Id': ctx.member }
+          }).then(function(r) { return r.ok ? r.json() : null; }).catch(function() { return null; }),
+          fetch(APP_URL + '/api/v1/records/team-summary').then(function(r) { return r.ok ? r.json() : {}; }).catch(function() { return {}; }),
+          fetch(APP_URL + '/api/v1/estimates/team-board').then(function(r) { return r.ok ? r.json() : {}; }).catch(function() { return {}; })
+        ])
+        .then(function(results) {
+          var timer = results[0];
+          var summaries = results[1];
+          var estimates = results[2];
+          var badges = [];
+
+          var cardSummary = summaries[ctx.card];
+          var cardEstimate = estimates[ctx.card];
+
+          if (cardSummary && cardSummary.total_sec > 0) {
+            var actualMin = Math.round(cardSummary.total_sec / 60);
+            var estText = '';
+            var badgeColor = 'blue';
+
+            if (cardEstimate) {
+              var ratio = actualMin / cardEstimate.estimated_min;
+              if (ratio <= 0.8) badgeColor = 'green';
+              else if (ratio <= 1.0) badgeColor = 'yellow';
+              else badgeColor = 'red';
+              estText = ' / ' + formatDuration(cardEstimate.estimated_min * 60);
+            }
+
+            var membersText = cardSummary.members.join(', ');
+
+            badges.push({
+              id: 'total-time',
+              title: membersText,
+              text: formatDuration(cardSummary.total_sec) + estText,
+              color: badgeColor
+            });
+          } else if (cardEstimate) {
+            badges.push({
+              id: 'estimate-only',
+              title: 'Estimated',
+              text: '~' + formatDuration(cardEstimate.estimated_min * 60),
+              color: 'yellow'
+            });
+          }
+
+          if (timer && timer.trello_card_id === ctx.card) {
+            var elapsed = Math.floor((Date.now() - new Date(timer.started_at).getTime()) / 1000);
+            badges.push({
+              id: 'timer-badge',
+              title: 'Tracking',
+              text: '⏱ ' + formatDuration(elapsed),
+              color: 'green'
+            });
+          }
+
+          return badges;
+        })
+        .catch(function() { return []; });
+      }
+    });
+
+    function formatDuration(seconds) {
+      var h = Math.floor(seconds / 3600);
+      var m = Math.floor((seconds % 3600) / 60);
+      var s = seconds % 60;
+      return (h < 10 ? '0' : '') + h + ':' +
+             (m < 10 ? '0' : '') + m + ':' +
+             (s < 10 ? '0' : '') + s;
+    }
+  </script>
+</body>
+</html>
