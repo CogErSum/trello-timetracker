@@ -5,7 +5,7 @@ services:
     ports:
       - "127.0.0.1:8080:8000"
     environment:
-      DATABASE_URL: postgresql+asyncpg://postgres:${DB_PASSWORD}@host.docker.internal:5433/trello_timetracker
+      DATABASE_URL: postgresql+asyncpg://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/trello_timetracker
       CORS_ORIGINS: '["http://91.220.69.232","http://localhost:8080"]'
       TRELLO_API_KEY: ${TRELLO_API_KEY}
       TRELLO_API_TOKEN: ${TRELLO_API_TOKEN}
