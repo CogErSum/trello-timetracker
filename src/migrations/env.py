@@ -46,10 +46,10 @@ def do_run_migrations(connection) -> None:
 
 
 async def run_async_migrations() -> None:
-    # Create database if not exists
+    # Create database if not exists (requires AUTOCOMMIT, not inside transaction)
     db_name = database_url.split("/")[-1].split("?")[0]
     default_url = database_url.rsplit("/", 1)[0] + "/postgres"
-    default_engine = create_async_engine(default_url, poolclass=pool.NullPool)
+    default_engine = create_async_engine(default_url, poolclass=pool.NullPool, isolation_level="AUTOCOMMIT")
     async with default_engine.connect() as conn:
         exists = await conn.execute(
             text("SELECT 1 FROM pg_database WHERE datname = :name"), {"name": db_name}
