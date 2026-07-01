@@ -18,7 +18,7 @@ async def card_time_summary(
     async with async_session_factory() as session:
         time_record_repo = TimeRecordRepository(session)
         records = await time_record_repo.list_all(
-            trello_member_id=member_id,
+            trello_member_id=None,
             card_id=card_id,
         )
         total_sec = sum(r["duration_sec"] for r in records)
@@ -117,7 +117,7 @@ async def create_record(
             )
             await session.commit()
             duration_sec = request.duration_min * 60
-            post_card_comment(request.card_id, format_duration_comment(duration_sec, "logged"))
+            post_card_comment(request.card_id, format_duration_comment(duration_sec, "logged", member_id))
             return record
         except ValueError as e:
             raise HTTPException(status_code=422, detail=str(e))
@@ -175,7 +175,7 @@ async def update_record(
     from src.infrastructure.database.main import async_session_factory
     from uuid import UUID
     from src.application.records.update_record import UpdateRecordUseCase
-    from src.infrastructure.trello.comments import post_card_comment
+    from src.infrastructure.trello.comments import post_card_comment, fetch_member_name
 
     async with async_session_factory() as session:
         time_record_repo = TimeRecordRepository(session)
@@ -193,7 +193,8 @@ async def update_record(
             raise HTTPException(status_code=404, detail="Record not found")
 
         await session.commit()
-        post_card_comment(result["trello_card_id"], f"[TeamSight] Record updated")
+        name = fetch_member_name(member_id)
+        post_card_comment(result["trello_card_id"], f"[TeamSight] {name}: record updated")
         result["member_name"] = member_id
         return result
 
@@ -205,7 +206,7 @@ async def delete_record(
 ):
     from src.infrastructure.database.main import async_session_factory
     from uuid import UUID
-    from src.infrastructure.trello.comments import post_card_comment, format_duration_comment
+    from src.infrastructure.trello.comments import post_card_comment, format_duration_comment, fetch_member_name
 
     async with async_session_factory() as session:
         time_record_repo = TimeRecordRepository(session)
@@ -216,4 +217,4 @@ async def delete_record(
 
         await time_record_repo.delete(UUID(record_id))
         await session.commit()
-        post_card_comment(existing["trello_card_id"], format_duration_comment(existing["duration_sec"], "removed"))
+        post_card_comment(existing["trello_card_id"], format_duration_comment(existing["duration_sec"], "removed", member_id))

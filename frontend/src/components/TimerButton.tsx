@@ -17,6 +17,7 @@ export function TimerButton({ memberId, cardId }: TimerButtonProps) {
   const [activeTimer, setActiveTimer] = useState<ActiveTimer | null>(null);
   const [elapsed, setElapsed] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     checkActiveTimer();
@@ -36,20 +37,36 @@ export function TimerButton({ memberId, cardId }: TimerButtonProps) {
   const checkActiveTimer = async () => {
     try {
       const timer = await api.timers.getActive(memberId) as ActiveTimer;
-      setActiveTimer(timer && timer.trello_card_id === cardId ? timer : null);
+      if (timer && timer.trello_card_id === cardId) {
+        setActiveTimer(timer);
+        setError(null);
+      } else if (timer) {
+        setActiveTimer(null);
+        setError('Active timer on another card. Stop it first.');
+      } else {
+        setActiveTimer(null);
+        setError(null);
+      }
     } catch {
       setActiveTimer(null);
+      setError(null);
     }
   };
 
   const handleStart = async () => {
     setLoading(true);
+    setError(null);
     try {
       const response = await api.timers.start(memberId, cardId) as { timer: ActiveTimer };
       setActiveTimer(response.timer);
+      setError(null);
       refreshTrelloBadge();
-    } catch {
-      alert('Failed to start timer');
+    } catch (e: any) {
+      if (e?.message?.includes('409')) {
+        setError('Active timer on another card. Stop it first.');
+      } else {
+        alert('Failed to start timer');
+      }
     } finally {
       setLoading(false);
     }
@@ -57,10 +74,12 @@ export function TimerButton({ memberId, cardId }: TimerButtonProps) {
 
   const handleStop = async () => {
     setLoading(true);
+    setError(null);
     try {
       await api.timers.stop(memberId);
       setActiveTimer(null);
       setElapsed(0);
+      setError(null);
       refreshTrelloBadge();
     } catch {
       alert('Failed to stop timer');
@@ -93,6 +112,7 @@ export function TimerButton({ memberId, cardId }: TimerButtonProps) {
           </button>
         </>
       )}
+      {error && <div className="tt-timer-error">{error}</div>}
     </div>
   );
 }

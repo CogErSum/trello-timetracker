@@ -1,4 +1,3 @@
-import asyncio
 import json
 import logging
 import urllib.request
@@ -8,7 +7,26 @@ from src.config.settings import settings
 logger = logging.getLogger(__name__)
 
 
-def _post_comment_sync(card_id: str, text: str) -> None:
+def fetch_member_name(member_id: str) -> str:
+    if not settings.trello.api_key or not settings.trello.api_token:
+        return member_id
+    try:
+        url = (
+            f"https://api.trello.com/1/members/{member_id}"
+            f"?key={settings.trello.api_key}&token={settings.trello.api_token}"
+            f"&fields=fullName"
+        )
+        with urllib.request.urlopen(url, timeout=5) as resp:
+            return json.loads(resp.read()).get("fullName", member_id)
+    except Exception:
+        return member_id
+
+
+def post_card_comment(card_id: str, text: str) -> None:
+    if not settings.trello.api_key or not settings.trello.api_token:
+        logger.warning("Trello API credentials not configured, skipping comment")
+        return
+
     url = (
         f"https://api.trello.com/1/cards/{card_id}/actions/comments"
         f"?key={settings.trello.api_key}&token={settings.trello.api_token}"
@@ -20,22 +38,15 @@ def _post_comment_sync(card_id: str, text: str) -> None:
         headers={"Content-Type": "application/json"},
         method="POST",
     )
-    with urllib.request.urlopen(req, timeout=10) as resp:
-        logger.info(f"Posted comment to card {card_id}: {text}")
-
-
-def post_card_comment(card_id: str, text: str) -> None:
-    if not settings.trello.api_key or not settings.trello.api_token:
-        logger.warning("Trello API credentials not configured, skipping comment")
-        return
 
     try:
-        _post_comment_sync(card_id, text)
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            logger.info(f"Posted comment to card {card_id}: {text}")
     except Exception as e:
         logger.error(f"Failed to post comment to card {card_id}: {e}")
 
 
-def format_duration_comment(duration_sec: int, action: str = "logged") -> str:
+def format_duration_comment(duration_sec: int, action: str = "logged", member_id: str | None = None) -> str:
     h = duration_sec // 3600
     m = (duration_sec % 3600) // 60
     if h > 0 and m > 0:
@@ -44,4 +55,6 @@ def format_duration_comment(duration_sec: int, action: str = "logged") -> str:
         dur_str = f"{h}h"
     else:
         dur_str = f"{m}m"
-    return f"[TeamSight] +{dur_str} {action}"
+
+    name = fetch_member_name(member_id) if member_id else "Unknown"
+    return f"[TeamSight] {name}: +{dur_str} {action}"
