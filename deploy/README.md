@@ -13,15 +13,20 @@ scp -r . root@91.220.69.232:/opt/trello-timetracker
 ## 2. Configure environment
 ```bash
 cd /opt/trello-timetracker
-cp deploy/.env.server .env
-nano .env
+cat > .env << 'EOF'
+DB_USER=deploy
+DB_PASSWORD=your_password
+DB_HOST=database
+DB_PORT=5433
+TRELLO_API_KEY=your_key
+TRELLO_API_TOKEN=your_token
+EOF
 ```
 
 ## 3. Deploy
 ```bash
-docker compose -f deploy/docker-compose.prod.yml up -d --build
+docker compose -f docker-compose.prod.yml up -d --build
 ```
-App automatically creates database and tables on first start.
 
 ## 4. Configure Nginx
 ```bash
@@ -31,15 +36,6 @@ nginx -t && systemctl reload nginx
 ```
 
 ## 5. Update Trello Power-Up URL
-In Trello developer settings, set the Power-Up URL to:
 ```
 http://91.220.69.232/power-up/
-```
-
-## Commands
-```bash
-docker compose -f deploy/docker-compose.prod.yml logs -f app
-docker compose -f deploy/docker-compose.prod.yml restart
-docker compose -f deploy/docker-compose.prod.yml down
-docker compose -f deploy/docker-compose.prod.yml up -d --build
 ```
