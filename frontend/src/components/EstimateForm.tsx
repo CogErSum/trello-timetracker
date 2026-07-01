@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../services/api';
-import { refreshTrelloBadge } from '../services/trello';
+import { refreshTrelloBadge, postTrelloComment } from '../services/trello';
 
 interface EstimateFormProps {
   memberId: string;
@@ -42,8 +42,17 @@ export function EstimateForm({ memberId, cardId }: EstimateFormProps) {
       const totalMin = hours * 60 + minutes;
       if (totalMin > 0) {
         await api.estimates.upsert(memberId, cardId, totalMin);
+        const h = Math.floor(totalMin / 60);
+        const m = totalMin % 60;
+        const durStr = h > 0 && m > 0 ? `${h}h ${m}m` : (h > 0 ? `${h}h` : `${m}m`);
+        const text = `[TeamSight] Estimate set: ${durStr}`;
+        const posted = await postTrelloComment(cardId, text);
+        if (!posted) api.timers.logComment(cardId, text).catch(() => {});
       } else if (estimate) {
         await api.estimates.delete(memberId, cardId);
+        const text = '[TeamSight] Estimate removed';
+        const posted = await postTrelloComment(cardId, text);
+        if (!posted) api.timers.logComment(cardId, text).catch(() => {});
       }
       refreshTrelloBadge();
       await fetchEstimate();

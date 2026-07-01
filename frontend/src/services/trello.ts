@@ -1,14 +1,16 @@
+let cachedClient: any = null;
+let clientChecked = false;
+
 function getTrelloClient(): any {
-  try {
-    const t = (window as any).TrelloPowerUp?.iframe();
-    if (t && typeof t.post === 'function') return t;
-  } catch {}
+  if (clientChecked) return cachedClient;
+  clientChecked = true;
 
   try {
-    const t = (window as any).TrelloPowerUp;
-    if (t && typeof t.iframe === 'function') {
-      const client = t.iframe();
-      if (client && typeof client.post === 'function') return client;
+    if (typeof (window as any).TrelloPowerUp === 'undefined') return null;
+    const t = (window as any).TrelloPowerUp.iframe();
+    if (t && typeof t.post === 'function') {
+      cachedClient = t;
+      return cachedClient;
     }
   } catch {}
 
@@ -17,7 +19,7 @@ function getTrelloClient(): any {
 
 export function refreshTrelloBadge() {
   const t = getTrelloClient();
-  if (t && typeof t.card === 'function') {
+  if (t) {
     try { t.card().refresh(); } catch {}
   }
 }
@@ -29,7 +31,8 @@ export async function postTrelloComment(cardId: string, text: string): Promise<b
   try {
     await t.post(`/1/cards/${cardId}/actions/comments`, { text }, { broadcast: false });
     return true;
-  } catch {
+  } catch (e) {
+    console.warn('[TeamSight] t.post failed, falling back to backend', e);
     return false;
   }
 }

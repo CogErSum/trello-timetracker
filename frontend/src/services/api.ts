@@ -58,6 +58,12 @@ export const api = {
       apiRequest(`/api/v1/timers/active`, {
         memberId,
       }),
+
+    logComment: (cardId: string, text: string) =>
+      apiRequest('/api/v1/comments', {
+        method: 'POST',
+        body: { card_id: cardId, text },
+      }),
   },
 
   records: {

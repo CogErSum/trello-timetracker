@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../services/api';
-import { refreshTrelloBadge } from '../services/trello';
+import { refreshTrelloBadge, postTrelloComment } from '../services/trello';
 
 interface TimerButtonProps {
   memberId: string;
@@ -61,6 +61,8 @@ export function TimerButton({ memberId, cardId }: TimerButtonProps) {
       setActiveTimer(response.timer);
       setError(null);
       refreshTrelloBadge();
+      const posted = await postTrelloComment(cardId, '[TeamSight] Timer started');
+      if (!posted) api.timers.logComment(cardId, '[TeamSight] Timer started').catch(() => {});
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       if (msg.includes('409') || msg.includes('active') || msg.includes('Active')) {

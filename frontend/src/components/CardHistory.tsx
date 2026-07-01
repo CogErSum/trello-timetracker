@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../services/api';
-import { refreshTrelloBadge } from '../services/trello';
+import { refreshTrelloBadge, postTrelloComment } from '../services/trello';
 
 interface CardHistoryProps {
   memberId: string;
@@ -80,6 +80,9 @@ export function CardHistory({ memberId, cardId }: CardHistoryProps) {
       });
       setEditingId(null);
       refreshTrelloBadge();
+      const text = '[TeamSight] Record updated';
+      const posted = await postTrelloComment(cardId, text);
+      if (!posted) api.timers.logComment(cardId, text).catch(() => {});
       await fetchRecords();
     } catch {
       alert('Failed to update record');
@@ -92,8 +95,18 @@ export function CardHistory({ memberId, cardId }: CardHistoryProps) {
     if (!confirm('Delete this record?')) return;
     setSaving(true);
     try {
+      const record = records.find(r => r.id === recordId);
       await api.records.delete(memberId, recordId);
       refreshTrelloBadge();
+      if (record) {
+        const dur = record.duration_sec;
+        const h = Math.floor(dur / 3600);
+        const m = Math.floor((dur % 3600) / 60);
+        const durStr = h > 0 && m > 0 ? `${h}h ${m}m` : (h > 0 ? `${h}h` : `${m}m`);
+        const text = `[TeamSight] -${durStr} removed`;
+        const posted = await postTrelloComment(cardId, text);
+        if (!posted) api.timers.logComment(cardId, text).catch(() => {});
+      }
       await fetchRecords();
     } catch {
       alert('Failed to delete record');

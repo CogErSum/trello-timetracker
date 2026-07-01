@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { api } from '../services/api';
-import { refreshTrelloBadge } from '../services/trello';
+import { refreshTrelloBadge, postTrelloComment, formatDurationComment } from '../services/trello';
 
 interface ManualEntryFormProps {
   memberId: string;
@@ -31,6 +31,10 @@ export function ManualEntryForm({ memberId, cardId, onSuccess }: ManualEntryForm
         comment: comment || undefined,
       });
       refreshTrelloBadge();
+      const durSec = (h * 60 + m) * 60;
+      const text = formatDurationComment(durSec, 'logged');
+      const posted = await postTrelloComment(cardId, text);
+      if (!posted) api.timers.logComment(cardId, text).catch(() => {});
       onSuccess();
     } catch {
       alert('Failed to add record');
