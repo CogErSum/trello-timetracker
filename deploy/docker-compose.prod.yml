@@ -1,34 +1,13 @@
 services:
-  db:
-    image: postgres:16-alpine
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: trello_timetracker
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "127.0.0.1:5432:5432"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d trello_timetracker"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
   app:
     build: .
     restart: unless-stopped
-    depends_on:
-      db:
-        condition: service_healthy
     ports:
-      - "127.0.0.1:8000:8000"
+      - "127.0.0.1:8080:8000"
     environment:
-      DATABASE_URL: postgresql+asyncpg://postgres:${DB_PASSWORD:-postgres}@db:5432/trello_timetracker
-      CORS_ORIGINS: '["http://91.220.69.232","http://localhost:8000"]'
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@host.docker.internal:5433/trello_timetracker
+      CORS_ORIGINS: '["http://91.220.69.232","http://localhost:8080"]'
       TRELLO_API_KEY: ${TRELLO_API_KEY}
       TRELLO_API_TOKEN: ${TRELLO_API_TOKEN}
-
-volumes:
-  postgres_data:
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
