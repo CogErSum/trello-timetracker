@@ -14,14 +14,14 @@ scp -r . root@91.220.69.232:/opt/trello-timetracker
 ```bash
 cd /opt/trello-timetracker
 cp deploy/.env.server .env
-nano .env  # fill in your Trello API key and token
+nano .env
 ```
 
 ## 3. Deploy
 ```bash
-chmod +x deploy/deploy.sh
-./deploy/deploy.sh
+docker compose -f deploy/docker-compose.prod.yml up -d --build
 ```
+App automatically creates database and tables on first start.
 
 ## 4. Configure Nginx
 ```bash

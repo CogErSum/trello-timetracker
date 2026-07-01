@@ -24,9 +24,24 @@ STATIC_DIR = Path("/app/static")
 
 async def init_db() -> None:
     from sqlalchemy import text
-    from src.infrastructure.database.main import engine, Base
+    from src.infrastructure.database.main import engine, Base, database_url
 
     try:
+        # Extract database name and create if not exists
+        db_name = database_url.split("/")[-1].split("?")[0]
+        default_url = database_url.rsplit("/", 1)[0] + "/postgres"
+        from sqlalchemy.ext.asyncio import create_async_engine
+        default_engine = create_async_engine(default_url, echo=False)
+        async with default_engine.begin() as conn:
+            exists = await conn.execute(
+                text("SELECT 1 FROM pg_database WHERE datname = :name"), {"name": db_name}
+            )
+            if not exists.scalar():
+                await conn.execute(text(f'CREATE DATABASE "{db_name}"'))
+                logger.info(f"Created database: {db_name}")
+        await default_engine.dispose()
+
+        # Create tables
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
             await conn.execute(text(
