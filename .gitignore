@@ -219,3 +219,8 @@ __marimo__/
 
 .idea
 frontend/node_modules/
+frontend/dist/
+frontend/tsconfig.tsbuildinfo
+static/assets/
+static/index.html
+static/power-up/
