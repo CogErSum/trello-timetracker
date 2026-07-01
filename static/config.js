@@ -1,3 +1,3 @@
 window.__CONFIG__ = {
-  API_BASE_URL: 'https://trello-timetracker.onrender.com'
+  API_BASE_URL: 'http://91.220.69.232'
 };
