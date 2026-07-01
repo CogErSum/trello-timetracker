@@ -1,3 +1,3 @@
 window.__CONFIG__ = {
-  API_BASE_URL: 'http://91.220.69.232'
+  API_BASE_URL: 'https://timetracker.karkach.tech'
 };
