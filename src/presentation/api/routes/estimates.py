@@ -3,7 +3,6 @@ from pydantic import BaseModel
 
 from src.infrastructure.database.persistence.time_estimate_repo import TimeEstimateRepository
 from src.presentation.api.dependencies import get_trello_member_id
-from src.infrastructure.trello.comments import post_card_comment, fetch_member_name
 
 router = APIRouter(prefix="/api/v1/estimates", tags=["estimates"])
 
@@ -47,11 +46,6 @@ async def upsert_estimate(
         repo = TimeEstimateRepository(session)
         estimate = await repo.upsert(member_id, request.card_id, request.estimated_min, request.comment)
         await session.commit()
-        h = request.estimated_min // 60
-        m = request.estimated_min % 60
-        dur_str = f"{h}h {m}m" if h > 0 and m > 0 else (f"{h}h" if h > 0 else f"{m}m")
-        name = fetch_member_name(member_id)
-        post_card_comment(request.card_id, f"[TeamSight] {name}: estimate set {dur_str}")
         return estimate
 
 
@@ -68,8 +62,6 @@ async def delete_estimate(
         if not deleted:
             raise HTTPException(status_code=404, detail="Estimate not found")
         await session.commit()
-        name = fetch_member_name(member_id)
-        post_card_comment(card_id, f"[TeamSight] {name}: estimate removed")
 
 
 @router.get("/board")

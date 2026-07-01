@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../services/api';
-import { refreshTrelloBadge } from '../services/trello';
+import { refreshTrelloBadge, postTrelloComment, formatDurationComment } from '../services/trello';
 
 interface TimerButtonProps {
   memberId: string;
@@ -61,6 +61,7 @@ export function TimerButton({ memberId, cardId }: TimerButtonProps) {
       setActiveTimer(response.timer);
       setError(null);
       refreshTrelloBadge();
+      postTrelloComment(cardId, '[TeamSight] Timer started');
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       if (msg.includes('409') || msg.includes('Active timer')) {
@@ -77,11 +78,14 @@ export function TimerButton({ memberId, cardId }: TimerButtonProps) {
     setLoading(true);
     setError(null);
     try {
-      await api.timers.stop(memberId);
+      const response = await api.timers.stop(memberId) as { record: { duration_sec: number; trello_card_id: string } };
       setActiveTimer(null);
       setElapsed(0);
       setError(null);
       refreshTrelloBadge();
+      if (response?.record) {
+        postTrelloComment(response.record.trello_card_id, formatDurationComment(response.record.duration_sec, 'logged'));
+      }
     } catch {
       alert('Failed to stop timer');
     } finally {
