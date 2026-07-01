@@ -4,8 +4,8 @@ from pathlib import Path
 from logging.config import fileConfig
 
 from alembic import context
-from sqlalchemy import pool
-from sqlalchemy.ext.asyncio import async_engine_from_config
+from sqlalchemy import pool, text
+from sqlalchemy.ext.asyncio import async_engine_from_config, create_async_engine
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
@@ -46,6 +46,19 @@ def do_run_migrations(connection) -> None:
 
 
 async def run_async_migrations() -> None:
+    # Create database if not exists
+    db_name = database_url.split("/")[-1].split("?")[0]
+    default_url = database_url.rsplit("/", 1)[0] + "/postgres"
+    default_engine = create_async_engine(default_url, poolclass=pool.NullPool)
+    async with default_engine.connect() as conn:
+        exists = await conn.execute(
+            text("SELECT 1 FROM pg_database WHERE datname = :name"), {"name": db_name}
+        )
+        if not exists.scalar():
+            await conn.execute(text(f'CREATE DATABASE "{db_name}"'))
+    await default_engine.dispose()
+
+    # Run migrations
     connectable = async_engine_from_config(
         config.get_section(config.config_ini_section, {}),
         prefix="sqlalchemy.",

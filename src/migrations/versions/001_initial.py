@@ -50,6 +50,17 @@ def upgrade() -> None:
         sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
     )
 
+    op.create_table(
+        "time_estimate",
+        sa.Column("id", UUID(as_uuid=True), primary_key=True),
+        sa.Column("trello_member_id", sa.String, nullable=False, index=True),
+        sa.Column("trello_card_id", sa.String, nullable=False, index=True),
+        sa.Column("estimated_min", sa.Integer, nullable=False),
+        sa.Column("comment", sa.Text, nullable=True),
+        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
+        sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
+    )
+
 
 def downgrade() -> None:
     op.drop_table("active_timer")
